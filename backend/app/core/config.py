@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     debug: bool = False
     api_v1_prefix: str = "/api/v1"
+    database_url: str
 
     model_config =SettingsConfigDict(
         env_file=".env",
@@ -21,3 +22,5 @@ def get_settings() -> Settings:
     return Settings()
 
 settings = get_settings()
+
+
