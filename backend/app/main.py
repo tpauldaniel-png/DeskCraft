@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.api.routes.operations import router as operations_router
 
 def create_application() -> FastAPI:
     application = FastAPI(
@@ -22,3 +23,6 @@ def create_application() -> FastAPI:
 
 
 app = create_application()
+
+app.include_router(operations_router)
+
