@@ -19,7 +19,7 @@ jobs:
 
     env:
       ENVIRONMENT: test
-      DATABASE_URL: postgresql+psycopg2://deskcraft:deskcraft@localhost:5432/deskcraft_test
+      DATABASE_URL: postgresql+asyncpg://deskcraft:deskcraft@localhost:5432/deskcraft_test
 
     steps:
       - name: Download repository code
