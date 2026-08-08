@@ -1,16 +1,15 @@
 import logging
-
 from time import perf_counter
 
 from fastapi import Request
 from starlette.middleware.base import RequestResponseEndpoint
-from starlette.responses import Response
 
 logger = logging.getLogger("deskcraft.requests")
 
 
-
-async def request_logging_middleware(request: Request, call_next: RequestResponseEndpoint):
+async def request_logging_middleware(
+    request: Request, call_next: RequestResponseEndpoint
+):
     started_at = perf_counter()
 
     try:
@@ -26,8 +25,6 @@ async def request_logging_middleware(request: Request, call_next: RequestRespons
             duration_ms,
         )
         raise
-
-    
 
     duration_ms = (perf_counter() - started_at) * 1000
 

@@ -1,7 +1,7 @@
 from typing import Any
-from fastapi.encoders import jsonable_encoder
-from fastapi import FastAPI, Request
 
+from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
@@ -9,9 +9,10 @@ from starlette.responses import JSONResponse
 from app.schemas.common import ErrorDetail, ErrorResponse
 
 
-
 class AppException(Exception):
-    def __init__(self, *, status_code: int, code: str, message: str, details: Any | None = None) -> None:
+    def __init__(
+        self, *, status_code: int, code: str, message: str, details: Any | None = None
+    ) -> None:
         self.status_code = status_code
         self.code = code
         self.message = message
@@ -19,10 +20,9 @@ class AppException(Exception):
         super().__init__(message)
 
 
-
 def create_error_content(*, code: str, message: str, details: Any | None = None):
     response = ErrorResponse(
-        error = ErrorDetail(
+        error=ErrorDetail(
             code=code,
             message=message,
             details=details,
@@ -35,7 +35,7 @@ def create_error_content(*, code: str, message: str, details: Any | None = None)
     )
 
 
-async def app_exception_handler(request: Request,exc: AppException) -> JSONResponse:
+async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
 
     return JSONResponse(
         status_code=exc.status_code,
@@ -47,7 +47,9 @@ async def app_exception_handler(request: Request,exc: AppException) -> JSONRespo
     )
 
 
-async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     details = [
         {
             "field": ".".join(str(part) for part in error["loc"]),
@@ -66,7 +68,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         ),
     )
 
-async def http_exception_handler(request: Request,exc: StarletteHTTPException,) -> JSONResponse:
+
+async def http_exception_handler(
+    request: Request,
+    exc: StarletteHTTPException,
+) -> JSONResponse:
 
     return JSONResponse(
         status_code=exc.status_code,
@@ -77,7 +83,11 @@ async def http_exception_handler(request: Request,exc: StarletteHTTPException,) 
         headers=exc.headers,
     )
 
-async def unexpected_exception_handler(request: Request,exc: Exception,) -> JSONResponse:
+
+async def unexpected_exception_handler(
+    request: Request,
+    exc: Exception,
+) -> JSONResponse:
     return JSONResponse(
         status_code=500,
         content=create_error_content(
@@ -87,9 +97,11 @@ async def unexpected_exception_handler(request: Request,exc: Exception,) -> JSON
     )
 
 
-
 def register_exception_handlers(app: FastAPI) -> None:
-    app.add_exception_handler(AppException, app_exception_handler,)
+    app.add_exception_handler(
+        AppException,
+        app_exception_handler,
+    )
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(Exception, unexpected_exception_handler)

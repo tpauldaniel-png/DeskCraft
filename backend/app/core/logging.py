@@ -19,4 +19,3 @@ def configure_logging() -> None:
 
     logger.addHandler(handler)
     logger.propagate = False
-
