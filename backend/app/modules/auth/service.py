@@ -3,8 +3,9 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import AppException
-from app.modules.auth.password import hash_password
+from app.modules.auth.password import hash_password, verify_password
 from app.modules.auth.repository import UserRepository
+from app.modules.auth.schemas.login import LoginRequest
 from app.modules.auth.schemas.registration import UserCreate
 from app.modules.users.models.users import User
 
@@ -71,3 +72,32 @@ class AuthService:
             raise
 
         return created_user
+
+    async def authenticate_user(self, login_data: LoginRequest) -> User:
+
+        normalized_email = str(login_data.email).strip().lower()
+
+        user = await self.repository.get_user_by_email(normalized_email)
+
+        if user is None:
+            raise AppException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                code="INVALID_CREDENTIALS",
+                message="Invalid password or email",
+            )
+
+        if not verify_password(login_data.password, user.password_hash):
+            raise AppException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                code="INVALID_CREDENTIALS",
+                message="Invalid password or email",
+            )
+
+        if not user.is_active:
+            raise AppException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                code="ACCOUNT_INACTIVE",
+                message="This account is inactive",
+            )
+
+        return user
