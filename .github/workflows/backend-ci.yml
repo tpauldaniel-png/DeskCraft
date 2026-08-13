@@ -20,6 +20,10 @@ jobs:
     env:
       ENVIRONMENT: test
       DATABASE_URL: postgresql+asyncpg://deskcraft:deskcraft@localhost:5432/deskcraft_test
+      JWT_SECRET_KEY: ci-test-secret-key-not-for-production
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      AUTH_COOKIE_SECURE: false
 
     steps:
       - name: Download repository code
