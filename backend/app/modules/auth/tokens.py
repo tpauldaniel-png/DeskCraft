@@ -1,7 +1,9 @@
 from datetime import UTC, datetime, timedelta
+from typing import Any
 from uuid import UUID
 
 import jwt
+from jwt.exceptions import InvalidTokenError
 
 from app.core.config import settings
 
@@ -25,3 +27,21 @@ def create_access_token(user_id: UUID, role: str) -> str:
     encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return encoded_jwt
+
+
+def decode_access_token(token: str) -> dict[str, Any]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+    except InvalidTokenError:
+        return None
+
+    if payload.get("type") != "access":
+        return None
+
+    subject = payload.get("sub")
+
+    if not isinstance(subject, str) or not subject:
+        return None
+
+    return payload

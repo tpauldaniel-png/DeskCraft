@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.db.session import get_db
+from app.modules.auth.dependencies import get_current_user, require_admin
 from app.modules.auth.schemas.login import LoginRequest, LoginResponse
 from app.modules.auth.schemas.registration import (
     UserCreate,
@@ -12,6 +13,7 @@ from app.modules.auth.schemas.registration import (
 )
 from app.modules.auth.service import AuthService
 from app.modules.auth.tokens import create_access_token
+from app.modules.users.models.users import User
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
@@ -57,3 +59,16 @@ async def login(
         message="Login Successful",
         data=UserResponse.model_validate(user),
     )
+
+
+@router.get("/me", response_model=UserResponse)
+async def get_my_profile(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    return current_user
+
+
+@router.get("/admin-check", response_model=UserResponse)
+async def admin_check(current_user: Annotated[User, Depends(require_admin)]) -> User:
+
+    return current_user
