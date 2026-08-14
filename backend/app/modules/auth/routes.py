@@ -72,3 +72,14 @@ async def get_my_profile(
 async def admin_check(current_user: Annotated[User, Depends(require_admin)]) -> User:
 
     return current_user
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout(response: Response) -> None:
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        secure=settings.auth_cookie_secure,
+        httponly=True,
+        samesite="lax",
+    )
