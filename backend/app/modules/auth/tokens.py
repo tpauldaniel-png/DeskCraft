@@ -12,7 +12,11 @@ ALGORITHM = settings.jwt_algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 
-def create_access_token(user_id: UUID, role: str) -> str:
+def create_access_token(
+    user_id: UUID,
+    role: str,
+    expires_delta: timedelta | None = None,
+) -> str:
 
     issued_at = datetime.now(UTC)
 

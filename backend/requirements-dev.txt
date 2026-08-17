@@ -3,3 +3,4 @@
 ruff
 pytest
 httpx2
+pytest-env==1.6.0
