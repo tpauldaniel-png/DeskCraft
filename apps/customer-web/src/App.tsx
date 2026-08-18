@@ -1,10 +1,15 @@
-import "./App.css";
+import { Button } from "@/components/ui/button";
 
 function App() {
   return (
-    <main className="app">
-      <h1>DeskCraft</h1>
-      <p>Build a workspace that works for you.</p>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
+      <h1 className="text-4xl font-bold">DeskCraft</h1>
+
+      <p className="text-muted-foreground">
+        Build a workspace that works for you.
+      </p>
+
+      <Button>Explore DeskCraft</Button>
     </main>
   );
 }
