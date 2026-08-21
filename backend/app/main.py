@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.operations import router as operations_router
 from app.core.config import settings
@@ -16,6 +17,24 @@ def create_application() -> FastAPI:
         version=settings.app_version,
         debug=settings.debug,
         description="Backend API for the DeskCraft e-commerce platform",
+    )
+
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_credentials=True,
+        allow_methods=[
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS",
+        ],
+        allow_headers=[
+            "Accept",
+            "Content-Type",
+        ],
     )
 
     register_exception_handlers(application)
