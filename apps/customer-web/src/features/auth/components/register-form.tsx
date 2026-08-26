@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 
 
 type RegisterFormProps = {
-    onSubmit: SubmitHandler<RegisterFormValues>
+    onSubmit: SubmitHandler<RegisterFormValues>;
+    isPending: boolean;
 }
 
-export function RegisterForm({onSubmit}: RegisterFormProps) {
+export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
     const {
         register, 
         handleSubmit,
@@ -25,6 +26,8 @@ export function RegisterForm({onSubmit}: RegisterFormProps) {
             password: "",
         },
     });
+
+
 
     return(
         <form noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -105,8 +108,8 @@ export function RegisterForm({onSubmit}: RegisterFormProps) {
                 </Field>
             </FieldGroup>
 
-            <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating account..." : "Create account"}
+            <Button type="submit" disabled={isSubmitting || isPending}>
+                {isSubmitting || isPending ? "Creating account..." : "Create account"}
             </Button>
         </form>
     )
