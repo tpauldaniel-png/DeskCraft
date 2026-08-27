@@ -56,27 +56,28 @@ export function LoginPage() {
     return (
         <section
             aria-labelledby="login-heading"
-            className="mx-auto w-full max-w-md px-4 py-10"
+            className="min-h-svh bg-background px-page py-section md:px-page-md lg:px-page-lg"
         >
-            <div className="mb-6 space-y-2">
-                <h1 id="login-heading" className="text-2xl font-semibold">
+            <div className="mx-auto mx-w-md">
+                <h1 id="login-heading" className="text-3xl font-bold tracking-tight text-foreground">
                     Log in to your DeskCraft account
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                     Enter your email and password to continue.
                 </p>
             </div>
             {errorMessage && (
                 <p
                 role="alert"
-                className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                className=""
                 >
                 {errorMessage}
                 
                 </p>
             )}
-
-            <LoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
+            <div className="mt-6 rounded-lg border border-border bg-card p-6 shadow-card">
+                <LoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
+            </div>
         </section>
     )
 }
