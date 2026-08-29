@@ -3,9 +3,10 @@ import { registerUser } from "@/features/auth/api/register-user";
 import type { RegisterFormValues } from "@/features/auth/schemas/register-form-schema";
 import type { ApiErrorResponse } from "@/types/api";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { CustomerAuthShell } from "@/features/auth/components/auth-shell";
 
 function getRegistrationError(error: unknown) {
     if (isAxiosError<ApiErrorResponse>(error)) {
@@ -43,32 +44,38 @@ export function RegisterPage() {
     const errorMessage = registerMutation.isError ? getRegistrationError(registerMutation.error) : null;
 
     return (
-
-        <section
-            aria-labelledby="register-heading"
-            className="mx-auto w-full max-w-md px-4 py-10"
+        <CustomerAuthShell
+            headingId="register-heading"
+            title="Create your account"
+            description="Join in the world of DeskCraft to setup your workspace"
         >
-            <div className="mb-6 space-y-2">
-                <h1 id="register-heading" className="text-2xl font-semibold">
-                Create your DeskCraft account
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                Enter your details to create your account.
-                </p>
-            </div>
+        
+            
 
             {errorMessage && (
                 <p
-                role="alert"
-                className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                    role="alert"
+                    className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
                 >
-                {errorMessage}
+                    {errorMessage}
                 
                 </p>
+
             )}
 
+
             <RegisterForm onSubmit={handleValidSubmit} isPending={registerMutation.isPending}/>
-        </section>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link
+                    to="/login"
+                    className="text-primary font-semibold underline-offset-4 hover:underline"
+                >
+                    Sign in
+                </Link>
+            </p>
+        </CustomerAuthShell>
     )
 
 }

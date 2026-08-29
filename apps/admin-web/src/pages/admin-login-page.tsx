@@ -9,6 +9,8 @@ import { isAxiosError } from "axios";
 import { adminAuthQueryKeys } from "@/features/auth/api/admin-auth-query-keys";
 import { getAdminSession } from "@/features/auth/api/get-admin-session";
 
+import { Card, CardContent, CardDescription, CardHeader,CardTitle } from "@/components/ui/card";
+
 function getLoginError(error: unknown) {
     if (isAxiosError<ApiErrorResponse>(error)) {
         return (
@@ -43,7 +45,7 @@ export function AdminLoginPage() {
         mutationFn: async (formValues: LoginFormValues) => {
             await loginUser(formValues);
 
-            const admin = getAdminSession();
+            const admin = await getAdminSession();
 
             if (!admin) {
                 throw new Error("Admin session verification failed");
@@ -74,27 +76,43 @@ export function AdminLoginPage() {
     return (
         <section
             aria-labelledby="login-heading"
-            className="mx-auto w-full max-w-md px-4 py-10"
+            className="w-full px-page py-section md:px-page-md lg:px-page-lg"
         >
-            <div className="mb-6 space-y-2">
-                <h1 id="login-heading" className="text-2xl font-semibold">
-                    Log in to your DeskCraft Admin account
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                    Enter your email and password to continue.
+
+            <div className="mx-auto w-full max-w-md">
+                <Card className="border-border bg-card shadow-card">
+                    <CardHeader className="space-y-4 text-center">
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold uppercase tracking-widest text-brand-warm">
+                                Admin Portal
+                            </p>
+                            <CardTitle id="login-heading" className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                                Welcome back
+                            </CardTitle>
+                            <CardDescription className="text-sm leading-6">
+                                Enter your administrator email and password to continue.
+                            </CardDescription>
+                        </div>
+                    </CardHeader>
+                    
+                    <CardContent className="space-y-5">
+                        {errorMessage && (
+                            <p
+                            role="alert"
+                            className="rounded-b-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                            >
+                            {errorMessage}
+                            
+                            </p>
+                        )}
+                    
+                        <AdminLoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
+                    </CardContent>
+                </Card>
+                <p className="mt-4 text-center text-xs text-muted-foreground">
+                    Access is restricted to authorized DeskCraft administrators.
                 </p>
             </div>
-            {errorMessage && (
-                <p
-                role="alert"
-                className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
-                >
-                {errorMessage}
-                
-                </p>
-            )}
-
-            <AdminLoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
         </section>
     )
 }

@@ -28,8 +28,8 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
     }});
 
     return (
-        <form noValidate onSubmit={handleSubmit(onSubmit)}>
-            <FieldGroup>
+        <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <FieldGroup className="gap-5">
                 <Field data-invalid={Boolean(errors.email)}>
                     <FieldLabel htmlFor="login-email">Email </FieldLabel>
                     <Input
@@ -38,6 +38,7 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
                         autoComplete="email"
                         aria-invalid={Boolean(errors.email)}
                         placeholder="Enter your email"
+                        className="h-11 bg-background px-4"
                         {...register("email")}
                     />
                     {errors.email && (
@@ -53,6 +54,7 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
                         autoComplete="current-password"
                         aria-invalid={Boolean(errors.password)}
                         placeholder="Enter your password"
+                        className="h-11 bg-background px-4"
                         {...register("password")}
                     />
                     {errors.password && (
@@ -61,7 +63,7 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
                 </Field>
             </FieldGroup>
 
-            <Button type="submit" disabled={isPending || isSubmitting}>
+            <Button type="submit" disabled={isPending || isSubmitting} className="h-11 w-full">
                 {isPending || isSubmitting ? "Logging in..." : "Log in"}
             </Button>
         </form>

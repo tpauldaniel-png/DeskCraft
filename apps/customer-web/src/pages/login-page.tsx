@@ -3,10 +3,11 @@ import { loginUser } from "@/features/auth/api/login-user";
 import { LoginForm } from "@/features/auth/components/login-form";
 import type { ApiErrorResponse } from "@/types/api";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { authQueryKeys } from "@/features/auth/api/auth-query-keys";
+import { CustomerAuthShell} from "@/features/auth/components/auth-shell";
 
 function getLoginError(error: unknown) {
     if (isAxiosError<ApiErrorResponse>(error)) {
@@ -54,30 +55,34 @@ export function LoginPage() {
     const errorMessage = loginMutation.isError ? getLoginError(loginMutation.error) : null;
 
     return (
-        <section
-            aria-labelledby="login-heading"
-            className="min-h-svh bg-background px-page py-section md:px-page-md lg:px-page-lg"
+        <CustomerAuthShell
+            headingId="login-heading"
+            title="Welcome back"
+            description="Sign in  to access your DeskCraft account"
         >
-            <div className="mx-auto mx-w-md">
-                <h1 id="login-heading" className="text-3xl font-bold tracking-tight text-foreground">
-                    Log in to your DeskCraft account
-                </h1>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Enter your email and password to continue.
-                </p>
-            </div>
+            
             {errorMessage && (
                 <p
-                role="alert"
-                className=""
+                    role="alert"
+                    className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
                 >
-                {errorMessage}
+                    {errorMessage}
                 
                 </p>
             )}
-            <div className="mt-6 rounded-lg border border-border bg-card p-6 shadow-card">
-                <LoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
-            </div>
-        </section>
-    )
+            
+            <LoginForm onSubmit={handleLoginSubmit} isPending={loginMutation.isPending}/>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+                New to DeskCraft?{" "}
+                <Link
+                    to="/register"
+                    className="text-primary font-semibold underline-offset-4 hover:underline"
+                >
+                    Create an account
+                </Link>
+            </p>
+            
+        </CustomerAuthShell>
+    );
 }

@@ -30,37 +30,41 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
 
 
     return(
-        <form noValidate onSubmit={handleSubmit(onSubmit)}>
+        <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <FieldGroup>
-                <Field data-invalid={Boolean(errors.firstName)}>
-                    <FieldLabel htmlFor="firstName">First Name</FieldLabel>
-                    <Input
-                        id="firstName"
-                        type="text"
-                        autoComplete="given-name"
-                        aria-invalid={Boolean(errors.firstName)}
-                        placeholder="Enter your first name"
-                        {...register("firstName")}
-                    />
-                    {errors.firstName && (
-                        <FieldError errors={[errors.firstName]} />
-                    )}
-                </Field>
+                <div className="grid gap-5 sm:grid-cols-2">
+                    <Field data-invalid={Boolean(errors.firstName)}>
+                        <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+                        <Input
+                            id="firstName"
+                            type="text"
+                            autoComplete="given-name"
+                            aria-invalid={Boolean(errors.firstName)}
+                            placeholder="Enter your first name"
+                            className="h-11 bg-background px-4"
+                            {...register("firstName")}
+                        />
+                        {errors.firstName && (
+                            <FieldError errors={[errors.firstName]} />
+                        )}
+                    </Field>
 
-                <Field data-invalid={Boolean(errors.lastName)}>
-                    <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
-                    <Input
-                        id="lastName"
-                        type="text"
-                        autoComplete="family-name"
-                        aria-invalid={Boolean(errors.lastName)}
-                        placeholder="Enter your last name"
-                        {...register("lastName")}
-                    />
-                    {errors.lastName && (
-                        <FieldError errors={[errors.lastName]} />
-                    )}
-                </Field>
+                    <Field data-invalid={Boolean(errors.lastName)}>
+                        <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+                        <Input
+                            id="lastName"
+                            type="text"
+                            autoComplete="family-name"
+                            aria-invalid={Boolean(errors.lastName)}
+                            placeholder="Enter your last name"
+                            className="h-11 bg-background px-4"
+                            {...register("lastName")}
+                        />
+                        {errors.lastName && (
+                            <FieldError errors={[errors.lastName]} />
+                        )}
+                    </Field>
+                </div>
 
                 <Field data-invalid={Boolean(errors.email)}>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -70,6 +74,7 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
                         autoComplete="email"
                         aria-invalid={Boolean(errors.email)}
                         placeholder="Enter your email"
+                        className="h-11 bg-background px-4"
                         {...register("email")}
                     />
                     {errors.email && (
@@ -82,9 +87,11 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
                     <Input
                         id="phoneNumber"
                         type="tel"
+                        inputMode="tel"
                         autoComplete="tel"
                         aria-invalid={Boolean(errors.phoneNumber)}
-                        placeholder="+919876543210"
+                        placeholder="+91 98765 43210"
+                        className="h-11 bg-background px-4"
                         {...register("phoneNumber")}
                     />
                     {errors.phoneNumber && (
@@ -100,6 +107,7 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
                         autoComplete="new-password"
                         aria-invalid={Boolean(errors.password)}
                         placeholder="Create a password"
+                        className="h-11 bg-background px-4"
                         {...register("password")}
                     />
                     {errors.password && (
@@ -108,7 +116,7 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
                 </Field>
             </FieldGroup>
 
-            <Button type="submit" disabled={isSubmitting || isPending}>
+            <Button type="submit" disabled={isSubmitting || isPending} className="h-11 w-full">
                 {isSubmitting || isPending ? "Creating account..." : "Create account"}
             </Button>
         </form>
