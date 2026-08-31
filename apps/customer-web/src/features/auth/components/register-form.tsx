@@ -2,9 +2,9 @@ import {useForm, type SubmitHandler} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterFormValues } from "../schemas/register-form-schema";
 import { Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/shared/loading-button";
 
 type RegisterFormProps = {
     onSubmit: SubmitHandler<RegisterFormValues>;
@@ -15,7 +15,7 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
     const {
         register, 
         handleSubmit,
-        formState: {errors, isSubmitting},
+        formState: {errors},
     } = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema), 
         defaultValues: {
@@ -116,9 +116,17 @@ export function RegisterForm({onSubmit, isPending}: RegisterFormProps) {
                 </Field>
             </FieldGroup>
 
-            <Button type="submit" disabled={isSubmitting || isPending} className="h-11 w-full">
-                {isSubmitting || isPending ? "Creating account..." : "Create account"}
-            </Button>
+            
+
+            <LoadingButton
+                type="submit"
+                isLoading={isPending}
+                className="h-11 w-full"
+                loadingText="Creating account..."
+            
+            >
+                Create account
+            </LoadingButton>
         </form>
     )
 

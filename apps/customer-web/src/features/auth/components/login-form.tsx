@@ -3,9 +3,9 @@ import { loginSchema, type LoginFormValues } from "../schemas/login-form-schema"
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/shared/loading-button";
 
 
 type LoginFormProps = {
@@ -19,7 +19,7 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
     const {
         register,
         handleSubmit, 
-        formState: {errors, isSubmitting},
+        formState: {errors},
     } = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema), 
         defaultValues:{
@@ -63,9 +63,17 @@ export function LoginForm({onSubmit, isPending}: LoginFormProps) {
                 </Field>
             </FieldGroup>
 
-            <Button type="submit" disabled={isPending || isSubmitting} className="h-11 w-full">
-                {isPending || isSubmitting ? "Logging in..." : "Log in"}
-            </Button>
+            <LoadingButton
+                type="submit"
+                isLoading={isPending}
+                className="h-11 w-full"
+                loadingText="Logging in..."
+            
+            >
+                Log in
+            </LoadingButton>
+
+            
         </form>
     )
 }
