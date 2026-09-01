@@ -1,4 +1,7 @@
-import { LogOutButton } from "@/features/auth/components/admin-logout-button";
+import { AdminHeader } from "@/components/layout/admin-header";
+import { AdminSidebar } from "@/components/layout/admin-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+
 import { useAdminSession } from "@/features/auth/hooks/use-admin-session";
 import { AccessDeniedPage } from "@/pages/access-denied-page";
 import { isAxiosError } from "axios";
@@ -39,17 +42,15 @@ export function ProtectedAdminLayout(){
 
 
     return(
-        <>
-            <header>
-                <span>DeskCraft</span>
-                <LogOutButton />
-            </header>
+        <SidebarProvider>
+            <AdminSidebar admin={admin}/>
 
-            <main>
-                <Outlet />
-            </main>
-
-            <footer>DeskCraft footer</footer>
-        </>
+            <SidebarInset>
+                <AdminHeader />
+                <main className="flex-1 p-4 md:p-6">
+                    <Outlet />
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
     )
 }
