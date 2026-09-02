@@ -21,7 +21,7 @@ export function HomePage() {
 
     return (
 
-        <main className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <section className="flex min-h-screen flex-col items-center justify-center gap-4">
             <h1 className="text-4xl font-bold">DeskCraft</h1>
 
             <p className="text-muted-foreground">
@@ -30,6 +30,6 @@ export function HomePage() {
             <p>Backend status: {healthQuery.data.status}</p>
 
             <Button>Explore DeskCraft</Button>
-        </main>
+        </section>
     );
 }
