@@ -1,9 +1,11 @@
-import DeskCraftLogo from "@/assets/DeskCraft-logo.png";
+
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 
+
+import DeskCraftLogo from "@/assets/dc-logo.png"
 
 
 
@@ -32,12 +34,13 @@ const authNavItems: NavItemsProps[] = [
 export function CustomerHeader() {
     return (
         <header>
-            <div className="border-b border-border bg-card ">
+            <div className="bg-background">
                 <div className="mx-auto flex h-16 items-center w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="w-10 h-10 object-contain">
+                    <div className="size-30 flex items-center">
                         <a href="/">
                             <img src={DeskCraftLogo} alt="" />
                         </a>
+                        
                         
                     </div>
 
