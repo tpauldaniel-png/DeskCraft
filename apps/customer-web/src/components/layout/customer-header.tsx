@@ -44,13 +44,13 @@ export function CustomerHeader() {
                         
                     </div>
 
-                    <nav className="mx-auto gap-10 hidden items-center md:flex">
+                    <nav className="mx-auto gap-10 hidden items-center md:flex md:text-sm lg:text-base">
                         {navItems.map((item) => (
                             <a key={item.label} href={item.href}>{item.label}</a>
                         ))}
                     </nav>
 
-                    <nav className="hidden items-end gap-5 md:flex">
+                    <nav className="hidden items-end gap-5 md:flex md:text-sm lg:text-base">
                         {authNavItems.map((item) => (
                             <Link to={item.href} key={item.label}>{item.label}</Link>
                         ))}
