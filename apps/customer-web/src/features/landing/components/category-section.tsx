@@ -7,7 +7,7 @@ type CategorySectionProps = {
 
 
 const CategoryCards : CategorySectionProps[] = [
-    {imageUrl: "/images/landing-page/category/chair.png", label: "Ergonomic Chairs"},
+    {imageUrl: "/images/landing-page/category/chair.png", label: "Chairs"},
     {imageUrl: "/images/landing-page/category/desk.png", label: "Desks"},
     {imageUrl: "/images/landing-page/category/accessories.png", label: "Accessories"},
     {imageUrl: "/images/landing-page/category/bundle.png", label: "Workspace bundles"}
