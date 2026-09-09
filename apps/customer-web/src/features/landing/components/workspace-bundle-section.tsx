@@ -56,8 +56,8 @@ const currencyFormatter = new Intl.NumberFormat("en-IN", {
 
 export function WorkspaceBundleSection() {
     return(
-        <section className="bg-background py-section" id="workspace-bundles">
-            <div className="px-section mx-auto max-w-7xl w-full">
+        <section className="bg-background py-10 sm:py-12 lg:py-section" id="workspace-bundles">
+            <div className="px-4 sm:px-6 lg:px-section mx-auto max-w-7xl w-full">
                 <div className="mb-8 max-w-2xl sm:mb-10">
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                         Complete Workspace Bundles

@@ -22,7 +22,7 @@ const accountFooter = [
 export function CustomerFooter() {
     return(
         <section className=" border-y border-border bg-primary text-primary-foreground ">
-            <div className="grid grid-cols-1 lg:grid-cols-4 mx-auto max-w-7xl px-section py-8 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-4 mx-auto max-w-7xl px-4 sm:px-6 lg:px-section py-10 sm:py-12 lg:py-section gap-5">
                 <div className="flex flex-col p-5 lg:col-span-2">
                     <div className="mb-4">
                         <img src={DeskCraftLogo} className="h-9" />

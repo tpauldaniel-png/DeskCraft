@@ -29,7 +29,7 @@ const trustItems = [
 export function TrustSection() {
     return (
         <section className="border-y border-border bg-secondary/40">
-            <div className="mx-auto w-full max-w-7xl px-section py-section">
+            <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-section py-10 sm:py-12 lg:py-section">
                 <h2>
                     Why shop with DeskCraft?
                 </h2>

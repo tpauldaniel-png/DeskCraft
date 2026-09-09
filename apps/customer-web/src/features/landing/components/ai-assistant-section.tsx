@@ -5,7 +5,7 @@
 
 export function AiAssistantSection() {
     return(
-        <section className="px-section py-section bg-background scroll-mt-20 mx-auto max-w-7xl w-full" id="ai-assistant">
+        <section className="px-4 sm:px-6 lg:px-section py-10 sm:py-12 lg:py-section bg-background scroll-mt-20 mx-auto max-w-7xl w-full" id="ai-assistant">
             <div className="grid grid-cols-1 lg:grid-cols-2 group bg-card shadow-sm border border-border h-full overflow-hidden
                         rounded-2xl transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1
                         hover:border-primary/30 hover:shadow-md">

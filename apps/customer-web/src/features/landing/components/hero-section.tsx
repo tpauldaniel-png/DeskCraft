@@ -14,11 +14,11 @@ export function HeroSection() {
 
                 <source media="(min-width: 768px)" srcSet="/images/landing-page/hero/hero-pic5.png" />
 
-                <img src="/images/landing-page/hero/hero-pic5.png" alt="" fetchPriority="high" className="h-full w-full object-cover object-top-right md:object-[60%_center] lg:object-center" />
+                <img src="/images/landing-page/hero/hero-pic4.png" alt="" fetchPriority="high" className="h-full w-full object-cover object-top-right md:object-[60%_center] lg:object-center" />
             </picture>
 
             
-            <div className="absolute inset-0 bg-primary/50 md:bg-primary/40 lg:bg-transparent" />
+            <div className="absolute inset-0 bg-primary/40 md:bg-primary/20 lg:bg-transparent" />
 
 
 
@@ -44,7 +44,7 @@ export function HeroSection() {
                             Shop by need
                         </Button>
 
-                        <Button className="border-background/70 bg-transparent  text-background  lg:border-input lg:text-primary" render={<Link to="#ai-assistant"/>} variant="outline">
+                        <Button className="border-background/70 bg-transparent lg:bg-background  text-background  lg:border-input lg:text-primary" render={<Link to="#ai-assistant"/>} variant="outline">
                             Find your setup
                         </Button>
                     </div>

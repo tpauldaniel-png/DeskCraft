@@ -1,5 +1,5 @@
 
-
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 
 
 type FeaturedProduct = {
@@ -63,10 +63,10 @@ export function FeaturedProductsSection() {
     return(
         <section 
             id="featured"
-            className="scroll-mt-20 bg-background py-section"
+            className="scroll-mt-20 bg-background py-10 sm:py-12 lg:py-section"
         
         >
-            <div className="px-section mx-auto max-w-7xl">
+            <div className="px-4 sm:px-6 lg:px-section mx-auto max-w-7xl">
                 <div className="mb-8 max-w-2xl sm:mb-10">
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
                         Customer Favourites
@@ -81,51 +81,71 @@ export function FeaturedProductsSection() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-                    {featuredProducts.map((product) => (
-                        <article
-                            key={product.slug}
-                            className="group bg-card shadow-sm border border-border flex flex-col h-full overflow-hidden
-                                rounded-2xl transition-[transform, box-shadow, border-color] duration-300 hover:-translate-y-1
-                                hover:border-primary/30 hover:shadow-md"
-                        >
-                            <div className="relative aspect-4/5 overflow-hidden bg-secondary">
-                                {product.badge && (
-                                    <span 
-                                    className="absolute rounded-full left-3 top-3 z-10 bg-primary px-3 py-1 text-xs font-medium
-                                        text-primary-foreground">
-                                        {product.badge}
-                                    </span>
-                                )}
+                <Carousel
+                    opts={{
+                        align: "start",
+                        loop: false
+                    }}
+                >
+                    <CarouselContent>
+                        
+                            {featuredProducts.map((product) => (
+                                <CarouselItem 
+                                    key={product.name}
+                                    className="flex basis-[88%] sm:basis-1/2 lg:basis-1/4 py-3"
+                                >
+                                    <article
+                                        key={product.slug}
+                                        className="group bg-card shadow-sm border border-border flex flex-col h-full overflow-hidden
+                                            rounded-2xl transition-[transform, box-shadow, border-color] duration-300 hover:-translate-y-1
+                                            hover:border-primary/30 hover:shadow-md"
+                                    >
+                                        <div className="relative aspect-4/5 overflow-hidden bg-secondary">
+                                            {product.badge && (
+                                                <span 
+                                                className="absolute rounded-full left-3 top-3 z-10 bg-primary px-3 py-1 text-xs font-medium
+                                                    text-primary-foreground">
+                                                    {product.badge}
+                                                </span>
+                                            )}
 
-                                <img 
-                                    src={product.imageUrl}
-                                    alt={product.imageAlt}
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="h-full w-full object-cover transition-transform duration-500"
-                                
-                                />
+                                            <img 
+                                                src={product.imageUrl}
+                                                alt={product.imageAlt}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="h-full w-full object-cover transition-transform duration-500"
+                                            
+                                            />
 
-                                
-                            </div>
+                                            
+                                        </div>
 
-                            <div className="flex flex-1 flex-col p-5 ">
-                                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                    {product.category}
-                                </p>
+                                        <div className="flex flex-1 flex-col p-5 ">
+                                            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                                {product.category}
+                                            </p>
 
-                                <h3 className="text-lg font-semibold tracking-tight text-foreground mt-2">
-                                    {product.name}
-                                </h3>
-                                
-                                <p className="mt-3 text-base font-semibold text-primary">
-                                    {currencyFormatter.format(product.price)}
-                                </p>
-                            </div>
-                        </article>
-                    ))}
-                </div>
+                                            <h3 className="text-lg font-semibold tracking-tight text-foreground mt-2">
+                                                {product.name}
+                                            </h3>
+                                            
+                                            <p className="mt-3 text-sm lg:text-base lg:font-semibold text-primary">
+                                                {currencyFormatter.format(product.price)}
+                                            </p>
+                                        </div>
+                                    </article>
+                                </CarouselItem>
+                            ))}
+                        
+                    </CarouselContent>
+                    
+                    <div className="mt-6 flex justify-end gap-3 lg:hidden">
+                        <CarouselPrevious className="static translate-y-0" />
+                        <CarouselNext className="static translate-y-0" />
+                    </div>
+
+                </Carousel>
             </div>
 
         </section>
