@@ -1,6 +1,6 @@
 
 
-import DeskCraftLogo from "@/assets/dc-full-logo-white.png";
+import DeskCraftLogo from "@/assets/dc-full-logo-white.webp";
 import { Link } from "react-router-dom";
 
 
@@ -25,7 +25,7 @@ export function CustomerFooter() {
             <div className="grid grid-cols-1 lg:grid-cols-4 mx-auto max-w-7xl px-4 sm:px-6 lg:px-section py-10 sm:py-12 lg:py-section gap-5">
                 <div className="flex flex-col p-5 lg:col-span-2">
                     <div className="mb-4">
-                        <img src={DeskCraftLogo} className="h-9" />
+                        <img src={DeskCraftLogo} alt="DeskCraft" className="h-9 w-auto" height={96} width={288} loading="lazy" decoding="async"/>
                         
                     </div>
                     <p className="mb-2 text-lg tracking-tight font-semibold text-primary-foreground/60">

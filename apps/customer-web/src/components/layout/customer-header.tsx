@@ -5,7 +5,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTi
 import { Button } from "../ui/button";
 
 
-import DeskCraftLogo from "@/assets/dc-logo.png"
+import DeskCraftLogo from "@/assets/dc-logo.webp"
 
 
 
@@ -38,7 +38,7 @@ export function CustomerHeader() {
                 <div className="mx-auto flex h-16 items-center w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="size-30 flex items-center">
                         <a href="/">
-                            <img src={DeskCraftLogo} alt="" />
+                            <img src={DeskCraftLogo} alt="DeskCraft" width={288} height={96} className="h-9 w-auto"/>
                         </a>
                         
                         

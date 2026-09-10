@@ -2,11 +2,6 @@ import { createBrowserRouter } from "react-router-dom"
 
 import { PublicLayout } from "@/layouts/public-layout"
 import { HomePage } from "@/pages/home-page"
-import { LoginPage } from "@/pages/login-page"
-import { RegisterPage } from "@/pages/register-page"
-import { ProtectedLayout } from "@/layouts/protected-layout"
-import { AccountPage } from "@/pages/account-page"
-import { NotFoundPage } from "@/pages/not-found-page"
 import { RootErrorBoundary } from "@/components/route-error-boundary"
 
 
@@ -21,34 +16,57 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        element: <HomePage />,
+                        element: <HomePage />
                     },
                     {
                         path: "login",
-                        element: <LoginPage />,
+                        lazy: async () => {
+                            const { LoginPage } = await import("@/pages/login-page");
+                            return {
+                                Component: LoginPage,
+                            };
+                        },
                     },
                     {
                         path: "register",
-                        element: <RegisterPage />,
+                        lazy: async () => {
+                            const { RegisterPage } = await import("@/pages/register-page");
+                            return {
+                                Component: RegisterPage,
+                            };
+                        },
                     },
                     {
                         path: "*",
-                        element: <NotFoundPage />,
+                        lazy: async() => {
+                            const { NotFoundPage } = await import("@/pages/not-found-page");
+                            return {
+                                Component: NotFoundPage,
+                            };
+                        },
                     },
-                ],
-
+                ]
             },
             {
-                element: <ProtectedLayout />,
+                lazy: async() => {
+                    const { ProtectedLayout } = await import("@/layouts/protected-layout");
+                    return {
+                        Component: ProtectedLayout,
+                    };
+                },
                 children: [
                     {
                         path: "account",
-                        element: <AccountPage />,
-
-                    }
+                        lazy: async () => {
+                            const { AccountPage } = await import("@/pages/account-page");
+                            return {
+                                Component: AccountPage,
+                            };
+                        },
+                    },
                 ]
-            },
-        ],
-    },
+            }
+        ]
+    }
 ])
     

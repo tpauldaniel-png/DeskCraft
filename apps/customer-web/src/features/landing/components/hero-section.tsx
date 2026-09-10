@@ -10,11 +10,11 @@ export function HeroSection() {
         <section className="min-h-560px  relative w-full overflow-hidden md:min-h-620px lg:min-h-650px">
 
             <picture className="absolute inset-0">
-                <source media="(min-width: 1024px)" srcSet="/images/landing-page/hero/hero-pic5.png"/>
+                
 
-                <source media="(min-width: 768px)" srcSet="/images/landing-page/hero/hero-pic5.png" />
+                <source media="(min-width: 768px)" srcSet="/images/landing-page/hero/hero-pic5.webp" />
 
-                <img src="/images/landing-page/hero/hero-pic4.png" alt="" fetchPriority="high" className="h-full w-full object-cover object-top-right md:object-[60%_center] lg:object-center" />
+                <img src="/images/landing-page/hero/hero-pic4.webp" alt="" fetchPriority="high" width={960} height={540} className="h-full w-full object-cover object-top-right md:object-[60%_center] lg:object-center" />
             </picture>
 
             

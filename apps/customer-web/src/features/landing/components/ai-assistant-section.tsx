@@ -30,8 +30,10 @@ export function AiAssistantSection() {
 
                 <div className="relative aspect-4/3 overflow-hidden bg-secondary">
                     <img 
-                        src="/images/landing-page/ai-assistant.png"
-                        alt="DeskCraft assistant showing personilised workspace recommendations"
+                        src="/images/landing-page/ai-assistant.webp"
+                        alt="DeskCraft assistant showing personalized workspace recommendations"
+                        width={1448}
+                        height={1086}
                         loading="lazy"
                         decoding="async"
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"

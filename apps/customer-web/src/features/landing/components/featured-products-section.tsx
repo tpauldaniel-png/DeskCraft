@@ -18,7 +18,7 @@ const featuredProducts : FeaturedProduct[] = [
         name: "Elevate Sit Stand Desk",
         category: "Desks",
         price: 34999,
-        imageUrl: "/images/landing-page/featured/featured-desk.png",
+        imageUrl: "/images/landing-page/featured/featured-desk.webp",
         imageAlt: "Pale oak adjustable desk with deep navy legs",
         badge: "Bestseller"
 
@@ -28,7 +28,7 @@ const featuredProducts : FeaturedProduct[] = [
         name: "Atlas Ergonomic Chair",
         category: "Chairs",
         price: 22499,
-        imageUrl: "images/landing-page/featured/featured-chair.png",
+        imageUrl: "images/landing-page/featured/featured-chair.webp",
         imageAlt: "Deep navy erognomic chair with headrest",
         badge: "Popular"
     },
@@ -37,7 +37,7 @@ const featuredProducts : FeaturedProduct[] = [
         name: "Arc Dual Monitor arm",
         category: "Accessories",
         price: 7499,
-        imageUrl: "images/landing-page/featured/featured-monitor-arm.png",
+        imageUrl: "images/landing-page/featured/featured-monitor-arm.webp",
         imageAlt: "Adjustable monitor arm in clean workspace",
 
     },
@@ -46,7 +46,7 @@ const featuredProducts : FeaturedProduct[] = [
         name: "Focus Ergonomic Footrest",
         category: "Accessories",
         price: 3499,
-        imageUrl: "images/landing-page/featured/featured-footrest.png",
+        imageUrl: "images/landing-page/featured/featured-footrest.webp",
         imageAlt: "Adjustable erognomic footrest in deep navy"
 ,
     }
@@ -112,6 +112,8 @@ export function FeaturedProductsSection() {
                                             <img 
                                                 src={product.imageUrl}
                                                 alt={product.imageAlt}
+                                                width={700}
+                                                height={875}
                                                 loading="lazy"
                                                 decoding="async"
                                                 className="h-full w-full object-cover transition-transform duration-500"

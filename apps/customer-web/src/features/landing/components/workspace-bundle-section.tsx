@@ -21,7 +21,7 @@ const developerBundle : WorkspaceBundle[] = [
         price: 59999,
         saving: 7497,
         products: ["Elevate Sit-Stand Desk", "Atlas Ergonomic chair", "Arc Dual Monitor arm", "Focus Erognomic footrest"],
-        imageUrl: "/images/landing-page/bundle/developer-bundle.png",
+        imageUrl: "/images/landing-page/bundle/developer-bundle.webp",
     }
 ];
 
@@ -34,7 +34,7 @@ const workspaceBundles : WorkspaceBundle[] = [
         price: 24999,
         saving: 5474,
         products: ["Compact desk", "Study chair", "Laptop stand", "Task lamp"],
-        imageUrl: "/images/landing-page/bundle/study-bundle.png",
+        imageUrl: "/images/landing-page/bundle/study-bundle.webp",
     },
     {
         name: "Home Office Comfort Bundle",
@@ -43,7 +43,7 @@ const workspaceBundles : WorkspaceBundle[] = [
         price: 38999,
         saving: 6247,
         products: ["Desk", "upholstered erognomic chair", "monitor arm", "meeting light"],
-        imageUrl: "/images/landing-page/bundle/office-bundle.png",
+        imageUrl: "/images/landing-page/bundle/office-bundle.webp",
     }
 ];
 
@@ -79,6 +79,9 @@ export function WorkspaceBundleSection() {
                             <div className="h-64 overflow-hidden bg-secondary sm:h-80 lg:h-auto md:min-h-100">
                                 <img 
                                     src={item.imageUrl}
+                                    alt=""
+                                    width={1536}
+                                    height={1024}
                                     loading="lazy"
                                     decoding="async"
                                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -146,6 +149,9 @@ export function WorkspaceBundleSection() {
                             <div className="relative aspect-3/2 overflow-hidden bg-secondary">
                                 <img 
                                     src={item.imageUrl}
+                                    alt=""
+                                    width={1536}
+                                    height={1024}
                                     loading="lazy"
                                     decoding="async"
                                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"

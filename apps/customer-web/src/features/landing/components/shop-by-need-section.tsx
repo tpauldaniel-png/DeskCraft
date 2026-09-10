@@ -9,10 +9,10 @@ type ShopByNeedProps = {
 }
 
 const shopByNeedCards : ShopByNeedProps[] = [
-    {imageUrl: "/images/landing-page/shop-by-need/study-setup.png", title: "Study Companion", description: "Designed for comfortable and focused study session" },
-    {imageUrl: "/images/landing-page/shop-by-need/developer-setup.png", title: "Developer workstation", description: "Desks, seating and accessories optimized for focused coding session"},
-    {imageUrl: "/images/landing-page/shop-by-need/work-from-home-setup.png", title: "Professional Home Office", description: "A comfortable workspace for meetings and  everyday remote work"},
-    {imageUrl: "/images/landing-page/shop-by-need/small-spaces-setup.png", title: "Compact Workspace", description: "Space saving essentials designed for smaller rooms"},
+    {imageUrl: "/images/landing-page/shop-by-need/study-setup.webp", title: "Study Companion", description: "Designed for comfortable and focused study session" },
+    {imageUrl: "/images/landing-page/shop-by-need/developer-setup.webp", title: "Developer workstation", description: "Desks, seating and accessories optimized for focused coding session"},
+    {imageUrl: "/images/landing-page/shop-by-need/work-from-home-setup.webp", title: "Professional Home Office", description: "A comfortable workspace for meetings and  everyday remote work"},
+    {imageUrl: "/images/landing-page/shop-by-need/small-spaces-setup.webp", title: "Compact Workspace", description: "Space saving essentials designed for smaller rooms"},
 ]   
     
 
@@ -62,7 +62,7 @@ export function ShopByNeedSection() {
                                         hover:border-primary/30 hover:shadow-md focus-within:ring-ring focus-within:ring-2"
                                 >
                                     <div className="aspect-4/5 overflow-hidden bg-muted">
-                                        <img src={item.imageUrl} alt="" className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-1.03" />
+                                        <img src={item.imageUrl} alt="" className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-1.03" width={700} height={875} loading="lazy" decoding="async" />
                                     </div>
                                     <div className="flex flex-1 flex-col p-5">
                                         <h3 className="text-lg tracking-tight font-semibold text-foreground">{item.title}</h3>
@@ -84,3 +84,6 @@ export function ShopByNeedSection() {
         </section>
     )
 }
+
+
+

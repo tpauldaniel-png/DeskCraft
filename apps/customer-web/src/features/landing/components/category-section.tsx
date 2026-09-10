@@ -7,10 +7,10 @@ type CategorySectionProps = {
 
 
 const CategoryCards : CategorySectionProps[] = [
-    {imageUrl: "/images/landing-page/category/chair.png", label: "Chairs"},
-    {imageUrl: "/images/landing-page/category/desk.png", label: "Desks"},
-    {imageUrl: "/images/landing-page/category/accessories.png", label: "Accessories"},
-    {imageUrl: "/images/landing-page/category/bundle.png", label: "Workspace bundles"}
+    {imageUrl: "/images/landing-page/category/chair.webp", label: "Chairs"},
+    {imageUrl: "/images/landing-page/category/desk.webp", label: "Desks"},
+    {imageUrl: "/images/landing-page/category/accessories.webp", label: "Accessories"},
+    {imageUrl: "/images/landing-page/category/bundle.webp", label: "Workspace bundles"}
 
 ]
 
@@ -42,7 +42,7 @@ export function CategorySection() {
                                 hover:border-primary/30 hover:shadow-md"
                         >
                             <div className="aspect-3/3 overflow-hidden bg-muted">
-                                <img src={item.imageUrl} alt="" className="object-cover w-full h-full transition-transform duration-500"/>
+                                <img src={item.imageUrl} alt="" className="object-cover w-full h-full transition-transform duration-500" decoding="async" loading="lazy" height={875} width={700}/>
                             </div>
 
                             <div className="flex flex-1 flex-col p-5 ">

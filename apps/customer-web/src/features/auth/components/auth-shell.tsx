@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import workSpaceImage from "@/assets/customer-auth-workspace.png";
+import workSpaceImage from "@/assets/customer-auth-workspace.webp";
 
 type CustomerAuthShellProps = {
     headingId: string;
@@ -19,7 +19,10 @@ export function CustomerAuthShell({headingId, title, description, children}: Cus
                 <div className="relative hidden overflow-hidden lg:block">
                     <img
                         src={workSpaceImage}
-                        alt="workspace-image"
+                        alt=""
+                        width={1122}
+                        height={1402}
+                        fetchPriority="high"
                         className="absolute inset-0 size-full object-cover"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-primary/95 via-25 to-transparent" />
