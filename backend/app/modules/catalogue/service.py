@@ -87,25 +87,25 @@ class CatalogueService:
                     message="A category with this name already exists",
                 )
 
-            for field, value in update_data.items():
-                setattr(category, field, value)
+        for field, value in update_data.items():
+            setattr(category, field, value)
 
-            try:
-                updated_category = await self.repository.update_category(category)
-                await self.db.commit()
-                await self.db.refresh(updated_category)
+        try:
+            updated_category = await self.repository.update_category(category)
+            await self.db.commit()
+            await self.db.refresh(updated_category)
 
-            except IntegrityError as error:
-                await self.db.rollback()
+        except IntegrityError as error:
+            await self.db.rollback()
 
-                raise AppException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    code="CATEGORY_NAME_ALREADY_EXISTS",
-                    message="A category with this name already exists",
-                ) from error
+            raise AppException(
+                status_code=status.HTTP_409_CONFLICT,
+                code="CATEGORY_NAME_ALREADY_EXISTS",
+                message="A category with this name already exists",
+            ) from error
 
-            except SQLAlchemyError:
-                await self.db.rollback()
-                raise
+        except SQLAlchemyError:
+            await self.db.rollback()
+            raise
 
-            return updated_category
+        return updated_category

@@ -3,6 +3,7 @@ import { ProtectedAdminLayout } from "@/layouts/protected-admin-layout";
 import { PublicAdminLayout } from "@/layouts/public-admin-layout";
 import { AdminDashboardPage } from "@/pages/admin-dashboard-page";
 import { AdminLoginPage } from "@/pages/admin-login-page";
+import { CategoriesPage } from "@/pages/categories-page";
 import { NotFoundAdminPage } from "@/pages/not-found-page";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
                     {
                         path: "dashboard",
                         element: <AdminDashboardPage />,
+                    },
+                    {
+                        path: "categories",
+                        element: <CategoriesPage />
                     }
                 ]
             }

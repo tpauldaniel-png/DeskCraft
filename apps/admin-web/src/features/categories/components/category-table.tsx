@@ -37,7 +37,7 @@ export function CategoryTable({categories, onEdit, onToggleStatus, updatingCateg
                     <TableHead>Description</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Updated Date</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                 </TableHeader>
 
                 <TableBody>

@@ -53,7 +53,7 @@ export function CategoryForm({onSubmit, isPending, loadingText, submitLabel}: Ca
                     )}
                 </Field>
 
-                <Field data-invalid={Boolean(errors.description)}>
+                <Field data-invalid={Boolean(errors.description)} className="mb-4">
                     <FieldLabel htmlFor="category-description">Description: </FieldLabel>
                     <Textarea
                         id="category-description"
@@ -73,6 +73,7 @@ export function CategoryForm({onSubmit, isPending, loadingText, submitLabel}: Ca
                 isLoading={isLoading}
                 className="h-11 w-full"
                 loadingText={loadingText}
+                
             >
                 {submitLabel}
             </LoadingButton>

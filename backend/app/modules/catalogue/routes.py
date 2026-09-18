@@ -49,7 +49,7 @@ async def list_categories(
         page_size=page_size,
     )
 
-
+@router.patch("/{category_id}", response_model=CategoryResponse)
 async def update_category(
     category_id: UUID,
     category_data: CategoryUpdate,

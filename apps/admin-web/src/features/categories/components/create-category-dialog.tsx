@@ -68,7 +68,7 @@ export function CreateCategoryDialog() {
                     >
                         {errorMessage}   
                     </p>
-                )};
+                )}
                     
                 <CategoryForm onSubmit={handleSubmit} isPending={createCategoryMutation.isPending} submitLabel="Create Category" loadingText="Creating Category..."/>
 

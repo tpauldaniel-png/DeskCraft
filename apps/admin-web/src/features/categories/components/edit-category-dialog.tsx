@@ -86,7 +86,7 @@ export function EditCategoryDialog({open, onOpenChange, category}: EditCategoryD
                     >
                         {errorMessage}   
                     </p>
-                )};
+                )}
 
                 <CategoryForm 
                     key={category.category_id}
