@@ -29,7 +29,10 @@ class CategoryRepository:
         total = count_result.scalar_one()
 
         statement = (
-            select(Category).order_by(Category.name.asc()).offset(offset).limit(page_size)
+            select(Category)
+            .order_by(Category.name.asc())
+            .offset(offset)
+            .limit(page_size)
         )
         result = await self.db.execute(statement)
         categories = list(result.scalars().all())
@@ -44,5 +47,3 @@ class CategoryRepository:
         await self.db.flush()
 
         return category
-
-

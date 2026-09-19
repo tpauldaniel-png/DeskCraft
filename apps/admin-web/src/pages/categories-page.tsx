@@ -98,25 +98,33 @@ export function CategoriesPage() {
                         updatingCategoryId={updatingCategoryId}        
                     />
 
-                    <div>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            disabled={page === 1}
-                            onClick={() => setPage((currentPage) => currentPage -1)}
-                        >
-                            Previous
-                        </Button>
-
-                        <Button
-                            type="button"
-                            variant="outline"
-                            disabled={page >= totalPages}
-                            onClick={() => setPage((currentPage) => currentPage + 1)}
+                    <div className="flex items-center justify-between">
+                        <p className="text-muted-foreground text-sm">
+                            Page {page} of {totalPages}
+                        </p>
                         
-                        >
-                            Next
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={page === 1}
+                                onClick={() => setPage((currentPage) => currentPage -1)}
+                            >
+                                Previous
+                            </Button>
+
+                            
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={page >= totalPages}
+                                onClick={() => setPage((currentPage) => currentPage + 1)}
+                            
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
                 
                 </>
