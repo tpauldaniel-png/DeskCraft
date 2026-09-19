@@ -12,7 +12,7 @@ from app.modules.catalogue.schemas.category import (
     CategoryResponse,
     CategoryUpdate,
 )
-from app.modules.catalogue.service import CatalogueService
+from app.modules.catalogue.service.category import CatalogueService
 from app.modules.users.models.users import User
 
 router = APIRouter(prefix="/api/v1/categories", tags=["Category"])

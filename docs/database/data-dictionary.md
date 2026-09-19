@@ -86,6 +86,7 @@ This serves as a single source of truth that helps to understand the context, fo
 - One category can have zero or many products, and every product belongs to exactly one category.
 
 
+
 ## Product variants 
 | Field | Type | Constraints | Description |
 |---|---|---|---|

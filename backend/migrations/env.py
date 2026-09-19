@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.core.config import settings
 from app.db.base import Base
 from app.modules.catalogue.models.category import Category  # noqa: F401
+from app.modules.catalogue.models.product import Product  # noqa: F401
 from app.modules.users.models.users import User  # noqa: F401
 
 # this is the Alembic Config object, which provides
