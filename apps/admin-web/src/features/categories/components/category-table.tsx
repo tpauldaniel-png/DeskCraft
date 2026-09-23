@@ -30,7 +30,7 @@ export function CategoryTable({categories, onEdit, onToggleStatus, updatingCateg
 
     return(
         <div>
-            <Table className="overflow-x-auto rounded-lg border">
+            <Table className="overflow-x-auto rounded-lg border bg-card p-4">
                 <TableCaption>A list of DeskCraft categories</TableCaption>
                 <TableHeader>
                     <TableHead>Name</TableHead>

@@ -95,7 +95,7 @@ export function CategoriesPage() {
                         categories={categories}
                         onEdit={handleEdit}
                         onToggleStatus={handleToggeleStatus}
-                        updatingCategoryId={updatingCategoryId}        
+                        updatingCategoryId={updatingCategoryId}     
                     />
 
                     <div className="flex items-center justify-between">

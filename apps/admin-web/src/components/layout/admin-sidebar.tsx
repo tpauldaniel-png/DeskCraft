@@ -17,7 +17,7 @@ import DeskCraftLogo from "@/assets/DeskCraft-logo-2.png"
 const navItems = [
     {title: "Dashboard", url: "#", icon: House},
     {title: "Categories", url: "/categories", icon: LayoutGrid},
-    {title: "Products", url: "#", icon: ShoppingBag},
+    {title: "Products", url: "/products", icon: ShoppingBag},
     {title: "Inventory", url: "#", icon: PackageSearch},
     {title: "Orders", url: "#", icon: FileText},
     {title: "Shipping", url: "#", icon: Truck},

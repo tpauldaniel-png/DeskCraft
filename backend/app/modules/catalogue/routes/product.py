@@ -37,10 +37,19 @@ async def list_products(
     current_user: Annotated[User, Depends(require_admin)],
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 20,
+    search: Annotated[str | None, Query(max_length=200)] = None,
+    category_id: Annotated[UUID | None, Query()] = None,
+    is_active: Annotated[bool | None, Query()] = None,
 ) -> ProductListResponse:
 
     service = ProductService(db)
-    products, total = await service.list_products(page=page, page_size=page_size)
+    products, total = await service.list_products(
+        page=page,
+        page_size=page_size,
+        search=search,
+        category_id=category_id,
+        is_active=is_active,
+    )
 
     return ProductListResponse(
         items=[ProductResponse.model_validate(product) for product in products],

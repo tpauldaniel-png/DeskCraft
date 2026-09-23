@@ -36,8 +36,8 @@ export function CreateCategoryDialog() {
             });
 
             setOpen(false)
-        } catch {
-
+        } catch (error) {
+            console.error("Failed to create category", error)
         }
     }
 

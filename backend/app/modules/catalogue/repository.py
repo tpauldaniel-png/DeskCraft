@@ -74,15 +74,38 @@ class ProductRepository:
         return result.scalar_one_or_none()
 
     async def list_products(
-        self, page: int, page_size: int
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        category_id: UUID | None = None,
+        is_active: bool | None = None,
     ) -> tuple[list[Product], int]:
         offset = (page - 1) * page_size
-        count_statement = select(func.count(Product.product_id))
+
+        conditions = []
+
+        if search is not None and search.strip():
+            search_value = f"%{search.strip()}%"
+            conditions.append(Product.name.ilike(search_value))
+
+        if category_id is not None:
+            conditions.append(Product.category_id == category_id)
+
+        if is_active is not None:
+            conditions.append(Product.is_active == is_active)
+
+        count_statement = select(func.count(Product.product_id)).where(*conditions)
+
         count_result = await self.db.execute(count_statement)
         total = count_result.scalar_one()
 
         statement = (
-            select(Product).order_by(Product.name.asc()).offset(offset).limit(page_size)
+            select(Product)
+            .where(*conditions)
+            .order_by(Product.name.asc())
+            .offset(offset)
+            .limit(page_size)
         )
         result = await self.db.execute(statement)
         products = list(result.scalars().all())

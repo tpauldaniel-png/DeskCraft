@@ -11,6 +11,7 @@ export type Category = {
 
 }
 
+
 export type CategoryListResponse = {
     items: Category[];
     total: number;

@@ -54,8 +54,8 @@ export function EditCategoryDialog({open, onOpenChange, category}: EditCategoryD
             })
 
             onOpenChange(false);
-        } catch {
-
+        } catch (error) {
+            console.error("Failed to update category", error)
         }
     }
 

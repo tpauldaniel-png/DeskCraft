@@ -77,10 +77,19 @@ class ProductService:
         return created_product
 
     async def list_products(
-        self, page: int, page_size: int
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        category_id: UUID | None = None,
+        is_active: bool | None = None,
     ) -> tuple[list[Product], int]:
         return await self.product_repository.list_products(
-            page=page, page_size=page_size
+            page=page,
+            page_size=page_size,
+            search=search,
+            category_id=category_id,
+            is_active=is_active,
         )
 
     async def update_product(
