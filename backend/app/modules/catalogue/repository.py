@@ -1,11 +1,11 @@
 from uuid import UUID
 
+from backend.app.modules.catalogue.models.variant import Variant
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.models.category import Category
 from app.modules.catalogue.models.product import Product
-from backend.app.modules.catalogue.models.variant import Variant
 
 
 class CategoryRepository:

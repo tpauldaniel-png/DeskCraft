@@ -6,14 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
-
 from app.modules.catalogue.schemas.variant import (
     VariantCreate,
     VariantListResponse,
     VariantResponse,
     VariantUpdate,
 )
-
 from app.modules.catalogue.service.variant import VariantService
 from app.modules.users.models.users import User
 
@@ -86,4 +84,3 @@ async def update_variant(
     variant = await service.update_variant(variant_id, variant_data)
 
     return VariantResponse.model_validate(variant)
-

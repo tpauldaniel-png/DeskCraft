@@ -1,5 +1,3 @@
-
-
 from uuid import UUID
 
 from fastapi import status
@@ -8,10 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.variant import Variant
-
-from app.modules.catalogue.repository import VariantRepository
+from app.modules.catalogue.repository import (
+    CategoryRepository,
+    ProductRepository,
+    VariantRepository,
+)
 from app.modules.catalogue.schemas.variant import VariantCreate, VariantUpdate
-from app.modules.catalogue.repository import ProductRepository, CategoryRepository
 
 
 class VariantService:
@@ -46,10 +46,6 @@ class VariantService:
                 message="Variant with this SKU already exists",
             )
 
-        
-
-        
-
         variant = Variant(
             name=variant_data.name,
             price=variant_data.price,
@@ -62,7 +58,7 @@ class VariantService:
             await self.db.commit()
             await self.db.refresh(creatded_variant)
 
-        except IntegrityError as error:
+        except IntegrityError:
             await self.db.rollback()
 
             raise AppException(
@@ -77,8 +73,6 @@ class VariantService:
 
         return creatded_variant
 
-
-
     async def update_variant(
         self, variant_id: UUID, variant_data: VariantUpdate
     ) -> Variant:
@@ -89,7 +83,7 @@ class VariantService:
                 code="VARIANT_NOT_FOUND",
                 message="Variant not found",
             )
-        
+
         normalized_sku = None
         if variant_data.sku is not None:
             normalized_sku = variant_data.sku.strip().lower()
@@ -102,7 +96,6 @@ class VariantService:
                     code="VARIANT_ALREADY_EXISTS",
                     message="Variant with this SKU already exists",
                 )
-
 
         if variant_data.product_id is not None:
             product = await self.product_repository.get_product_by_id(
@@ -129,13 +122,13 @@ class VariantService:
 
         if variant_data.product_id is not None:
             variant.product_id = variant_data.product_id
-        
+
         try:
             updated_variant = await self.variant_repository.update_variant(variant)
             await self.db.commit()
             await self.db.refresh(updated_variant)
 
-        except IntegrityError as error:
+        except IntegrityError:
             await self.db.rollback()
 
             raise AppException(
@@ -149,7 +142,6 @@ class VariantService:
             raise
 
         return updated_variant
-
 
     async def get_variant(self, variant_id: UUID) -> Variant:
         variant = await self.variant_repository.get_variant_by_id(variant_id)
@@ -174,10 +166,3 @@ class VariantService:
         return await self.variant_repository.list_variants(
             page, page_size, search, product_id, is_active
         )
-
-    
-        
-
-
-
-

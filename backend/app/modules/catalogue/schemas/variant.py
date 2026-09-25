@@ -1,11 +1,9 @@
-
-
 from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 TrimmedName = Annotated[
     str,
@@ -31,6 +29,7 @@ Price = Annotated[
     Field(ge=0, max_digits=10, decimal_places=2),
 ]
 
+
 class VariantCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -50,7 +49,8 @@ class VariantResponse(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-    product_id: UUID    
+    product_id: UUID
+
 
 class VariantUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -72,6 +72,7 @@ class VariantUpdate(BaseModel):
                 raise ValueError(f"{field} cannot be null")
 
         return self
+
 
 class VariantListResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
