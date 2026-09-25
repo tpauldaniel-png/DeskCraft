@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from backend.app.modules.catalogue.models.variant import Variant
+from app.modules.catalogue.models.variant import Variant
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
