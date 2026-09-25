@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.models.category import Category
 from app.modules.catalogue.models.product import Product
+from backend.app.modules.catalogue.models.variant import Variant
 
 
 class CategoryRepository:
@@ -110,3 +111,65 @@ class ProductRepository:
         result = await self.db.execute(statement)
         products = list(result.scalars().all())
         return products, total
+
+
+class VariantRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def create_variant(self, variant: Variant) -> Variant:
+        self.db.add(variant)
+        await self.db.flush()
+        return variant
+
+    async def get_variant_by_id(self, variant_id: UUID) -> Variant | None:
+        statement = select(Variant).where(Variant.variant_id == variant_id)
+        result = await self.db.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def update_variant(self, variant: Variant) -> Variant:
+        await self.db.flush()
+        return variant
+
+    async def get_variant_by_sku(self, sku: str) -> Variant | None:
+        statement = select(Variant).where(Variant.sku == sku)
+        result = await self.db.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def list_variants(
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        product_id: UUID | None = None,
+        is_active: bool | None = None,
+    ) -> tuple[list[Variant], int]:
+
+        conditions = []
+
+        if search is not None and search.strip():
+            search_value = f"%{search.strip()}%"
+            conditions.append(Variant.name.ilike(search_value))
+
+        if product_id is not None:
+            conditions.append(Variant.product_id == product_id)
+
+        if is_active is not None:
+            conditions.append(Variant.is_active == is_active)
+
+        offset = (page - 1) * page_size
+
+        count_statement = select(func.count(Variant.variant_id)).where(*conditions)
+        count_result = await self.db.execute(count_statement)
+        total = count_result.scalar_one()
+
+        statement = (
+            select(Variant)
+            .where(*conditions)
+            .order_by(Variant.name.asc(), Variant.variant_id.asc())
+            .offset(offset)
+            .limit(page_size)
+        )
+        result = await self.db.execute(statement)
+        variants = list(result.scalars().all())
+        return variants, total

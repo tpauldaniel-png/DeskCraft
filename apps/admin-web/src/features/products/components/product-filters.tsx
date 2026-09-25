@@ -5,6 +5,7 @@ import type { Category } from "../../categories/types/category";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup,DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuTrigger, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { Search } from "lucide-react";
 
 
 
@@ -52,15 +53,18 @@ export function ProductFilters({searchText, onSearchTextChange, categoryId, onCa
 
     return(
         <div className="flex flex-col gap-4 rounded-lg border bg-card md:flex-row md:items-center md:justify-between min-h-14 px-4 py-3">
-            <div className="flex flex-col gap-2 md:flex-row md:items-center flex-1">
-                <label htmlFor="product-search">Search Products</label>
+            <div className="flex flex-col gap-2 md:flex-row md:items-center flex-1 relative">
+                <div>
+                    <Search className="size-4 absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground"/>
+                </div>
 
                 <Input
                     id="product-search"
                     type="search"
-                    placeholder="Search products..."
+                    placeholder="Search Products..."
                     value={searchText}
                     onChange={(e) => onSearchTextChange(e.target.value)}
+                    className="pl-10"
                 />
             </div>
             <div className="flex flex-col gap-2 md:flex-row md:items-center sm:flex-wrap">
