@@ -14,10 +14,11 @@ type ProductTableProps = {
     onEdit: (product: Product) => void;
     onToggleStatus: (product: Product) => void;
     updatingProductId?: string | null;
+    onVariant: (product: Product) => void;
 }
 
 
-export function ProductTable({products, categories, onEdit, onToggleStatus, updatingProductId}: ProductTableProps) {
+export function ProductTable({products, categories, onEdit, onToggleStatus, updatingProductId, onVariant}: ProductTableProps) {
 
     function formatDate(date: string) {
         return new Intl.DateTimeFormat("en-IN", {
@@ -65,6 +66,15 @@ export function ProductTable({products, categories, onEdit, onToggleStatus, upda
                                         disabled={updatingProductId === product.product_id}
                                     >
                                         {product.is_active ? "Deactivate" : "Activate"}
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onVariant(product)}
+                                    
+                                    >
+                                        Manage Variants
                                     </Button>
                                 </TableCell>
                             </TableRow>

@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateProductTab } from "@/features/products/components/create-product-tab";
 import type { Product } from "@/features/products/types/product";
 import { EditProductTab } from "@/features/products/components/edit-product-tab";
+import { ManageVariantTab } from "@/features/products/components/manage-variant-tab";
 
 
 
@@ -31,8 +32,7 @@ export function ProductsPage() {
 
     const categoriesQuery = useCategories(page, PAGE_SIZE);
     const categories = categoriesQuery.data?.items ?? [];
-    const total = categoriesQuery.data?.total ?? 0;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    
 
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
@@ -53,6 +53,11 @@ export function ProductsPage() {
         page: page,
         page_size: PAGE_SIZE,
     });
+
+    const total = productsQuery.data?.total ?? 0;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+
 
     const products = productsQuery.data?.items ?? [];
 
@@ -95,6 +100,11 @@ export function ProductsPage() {
         });
     }
 
+    function handleVariant(product: Product) {
+        setSelectedProduct(product);
+        setActiveTab("product-variants");
+    }
+
 
     return(
         <section className="space-y-6">
@@ -121,6 +131,12 @@ export function ProductsPage() {
                     {selectedProduct && (
                         <TabsTrigger value="edit-product" className="h-9 px-3">
                             Edit Product
+                        </TabsTrigger>
+                    )}
+
+                    {selectedProduct && (
+                        <TabsTrigger value="product-variants" className="h-9 px-3">
+                            Manage Variants
                         </TabsTrigger>
                     )}
                 </TabsList>
@@ -166,6 +182,7 @@ export function ProductsPage() {
                                 onEdit={handleEdit}
                                 onToggleStatus={handleToggleStatus}
                                 updatingProductId={updatingProductId}
+                                onVariant={handleVariant}
                             />
 
 
@@ -230,6 +247,25 @@ export function ProductsPage() {
                         />
                     )}
                 </TabsContent>
+
+                <TabsContent value="product-variants" className="space-y-4">
+                    {selectedProduct && (
+                        <div>
+                            <h2 className="text-lg font-semibold">Manage Variants for {selectedProduct.name}</h2>
+                            <p className="text-muted-foreground text-sm">
+                                Here you can manage the variants for the selected product.
+                            </p>
+                            <ManageVariantTab
+                                key={selectedProduct.product_id}
+                                productId={selectedProduct.product_id}
+                                
+                            />
+                        </div>
+                    )}
+                        
+                    
+                </TabsContent>
+                
             </Tabs>
         </section>
     )
