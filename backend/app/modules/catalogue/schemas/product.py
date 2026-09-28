@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 TrimmedName = Annotated[
     str,
@@ -14,12 +14,19 @@ TrimmedName = Annotated[
 ]
 
 
+class ProductSpecification(BaseModel):
+    material: TrimmedName | None = None
+    adjustment_feature: TrimmedName | None = None
+    max_load_kg: float | None = Field(default=None, ge=0)
+    assembly_required: bool | None = None
+
+
 class ProductCreate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     name: TrimmedName
     description: str | None = None
-    specifications: dict[str, object] | None = None
+    specifications: ProductSpecification | None = None
     category_id: UUID
 
 
@@ -29,7 +36,7 @@ class ProductResponse(BaseModel):
     product_id: UUID
     name: str
     description: str | None
-    specifications: dict[str, object] | None
+    specifications: ProductSpecification | None
     is_active: bool
     created_at: datetime
     updated_at: datetime
@@ -42,7 +49,7 @@ class ProductUpdate(BaseModel):
 
     name: TrimmedName | None = None
     description: str | None = None
-    specifications: dict[str, object] | None = None
+    specifications: ProductSpecification | None = None
     is_active: bool | None = None
     category_id: UUID | None = None
 

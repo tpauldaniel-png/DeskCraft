@@ -1,6 +1,6 @@
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useCreateVariant, useVariants } from "../hooks/use-variants";
+import { useCreateVariant, useUpdateVariant, useVariants } from "../hooks/use-variants";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { CreateVariantForm } from "./create-variant-form";
@@ -9,6 +9,9 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import type { VariantFormData } from "../schemas/variant-form-schema";
 import type { ApiErrorResponse } from "@/types/api";
 import { isAxiosError } from "axios";
+import { EditVariantDialog } from "./edit-variant-dialog";
+
+
 
 
 function createFormResponseError(error: unknown) {
@@ -38,6 +41,7 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
 
     const [page, setPage] = useState(1);
     const [isCreateVariantOpen, setIsCreateVariantOpen] = useState(false);
+    const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
     
 
 
@@ -57,6 +61,9 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
 
     const errorMessage = createVariantMutation.isError ? createFormResponseError(createVariantMutation.error) : null;
 
+    const updateVariantMutation = useUpdateVariant();
+
+
     async function handleCreateVariant(variantData: VariantFormData) {
         try {
             await createVariantMutation.mutateAsync({
@@ -73,7 +80,23 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
         }
     }
 
-    
+
+
+    async function handleToggleStatus(variant: ProductVariant) {
+        try {
+            await updateVariantMutation.mutateAsync({
+                variantId: variant.variant_id,
+                variantData: {
+                    is_active: !variant.is_active,
+                }
+            });
+
+            setPage(1); 
+            variantsQuery.refetch();
+        } catch (error) {
+            console.error("Failed to toggle variant status:", error);
+        }
+    }
 
 
 
@@ -97,16 +120,18 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
             </Button>
 
             
-
-            <CreateVariantForm
-                isOpen={isCreateVariantOpen}
-                onClose={() => setIsCreateVariantOpen(false)}
-                onSubmit={handleCreateVariant}
-                isPending={createVariantMutation.isPending}
-                submitLabel="Create Variant"
-                loadingText="Creating..."
-                errorMessage={errorMessage}
-            />
+            {isCreateVariantOpen && (
+                <CreateVariantForm
+                    isOpen={isCreateVariantOpen}
+                    onClose={() => setIsCreateVariantOpen(false)}
+                    onSubmit={handleCreateVariant}
+                    isPending={createVariantMutation.isPending}
+                    submitLabel="Create Variant"
+                    loadingText="Creating..."
+                    errorMessage={errorMessage}
+                />
+            )}
+            
             
             
 
@@ -163,10 +188,12 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
                                 </StatusBadge>
                             </TableCell>
                             <TableCell className="text-right">
-                                <Button type="button" variant="outline" size="sm" className="mr-2" >
+                                <Button type="button" variant="outline" size="sm" className="mr-2" onClick={() => setEditingVariant(variant)}>
                                     Edit
                                 </Button>
-                                <Button type="button" variant="outline" size="sm" >
+                                
+
+                                <Button type="button" variant="outline" size="sm" onClick={() => handleToggleStatus(variant)}>
                                     {variant.is_active ? "Deactivate" : "Activate"}
                                 </Button>
                                 
@@ -204,6 +231,17 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
                     </Button>
                 </div>
             </div>
+            {editingVariant && (
+                <EditVariantDialog 
+                    key={editingVariant.variant_id}
+                    variant={editingVariant}
+                    onClose={() => setEditingVariant(null)}
+                    onUpdated={() => {
+                        variantsQuery.refetch();
+                    }}
+                
+                />
+            )}
         </section>
     )
 

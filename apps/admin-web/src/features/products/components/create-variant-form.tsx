@@ -21,17 +21,18 @@ type CreateVariantFormProps = {
     submitLabel: string;
     loadingText: string;
     errorMessage?: string | null;
+    initialValues?: VariantFormData;
 }
 
 
-export function CreateVariantForm({onSubmit, isPending, submitLabel, loadingText, errorMessage, isOpen, onClose}: CreateVariantFormProps) {
+export function CreateVariantForm({onSubmit, isPending, submitLabel, loadingText, errorMessage, isOpen, onClose, initialValues}: CreateVariantFormProps) {
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<VariantFormData>({
         resolver: zodResolver(variantFormSchema),
-        defaultValues: {
+        defaultValues: initialValues ?? {
             name: "",
             sku: "",
             price: undefined,

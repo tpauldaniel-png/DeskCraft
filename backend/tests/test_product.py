@@ -427,3 +427,135 @@ async def test_admin_user_update_product_with_description_to_null(
     )
 
     assert update_response.status_code == 200
+
+
+async def test_admin_user_create_product_with_specifications_and_get_product(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    admin_user = await create_admin_user(client, db_session)
+    await admin_login(client, admin_user)
+
+    category_id = await create_test_category(client)
+
+    product_data = {
+        "category_id": category_id,
+        "name": "Test Product",
+        "description": "This is a test product used for permission testing.",
+        "specifications": {
+            "material": "Metal",
+            "adjustment_feature": "Height adjustable",
+            "max_load_kg": 50.0,
+            "assembly_required": False,
+        },
+    }
+
+    response = await client.post(
+        "/api/v1/products",
+        json=product_data,
+    )
+
+    assert response.status_code == 201
+
+    product_id = response.json()["product_id"]
+
+    get_response = await client.get(f"/api/v1/products/{product_id}")
+
+    assert get_response.status_code == 200
+    assert get_response.json()["specifications"] == product_data["specifications"]
+
+
+async def test_admin_user_update_product_specifications(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    admin_user = await create_admin_user(client, db_session)
+    await admin_login(client, admin_user)
+
+    category_id = await create_test_category(client)
+
+    product_data = {
+        "category_id": category_id,
+        "name": "Test Product",
+        "description": "This is a test product used for permission testing.",
+        "specifications": {
+            "material": "Metal",
+            "adjustment_feature": "Height adjustable",
+            "max_load_kg": 50.0,
+            "assembly_required": False,
+        },
+    }
+
+    response = await client.post(
+        "/api/v1/products",
+        json=product_data,
+    )
+
+    assert response.status_code == 201
+
+    product_id = response.json()["product_id"]
+
+    update_data = {
+        "specifications": {
+            "material": "Plastic",
+            "adjustment_feature": None,
+            "max_load_kg": 30.0,
+            "assembly_required": True,
+        }
+    }
+
+    update_response = await client.patch(
+        f"/api/v1/products/{product_id}",
+        json=update_data,
+    )
+
+    assert update_response.status_code == 200
+
+    get_response = await client.get(f"/api/v1/products/{product_id}")
+
+    assert get_response.status_code == 200
+    assert get_response.json()["specifications"] == update_data["specifications"]
+
+
+async def test_admin_user_update_product_specifications_with_invalid_max_load(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    admin_user = await create_admin_user(client, db_session)
+    await admin_login(client, admin_user)
+
+    category_id = await create_test_category(client)
+
+    product_data = {
+        "category_id": category_id,
+        "name": "Test Product",
+        "description": "This is a test product used for permission testing.",
+        "specifications": {
+            "material": "Metal",
+            "adjustment_feature": "Height adjustable",
+            "max_load_kg": 50.0,
+            "assembly_required": False,
+        },
+    }
+
+    response = await client.post(
+        "/api/v1/products",
+        json=product_data,
+    )
+
+    assert response.status_code == 201
+
+    product_id = response.json()["product_id"]
+
+    update_data = {
+        "specifications": {
+            "material": "Plastic",
+            "adjustment_feature": None,
+            "max_load_kg": -10.0,  # Invalid negative value
+            "assembly_required": True,
+        }
+    }
+
+    update_response = await client.patch(
+        f"/api/v1/products/{product_id}",
+        json=update_data,
+    )
+
+    assert update_response.status_code == 422

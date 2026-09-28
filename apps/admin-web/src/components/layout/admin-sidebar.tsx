@@ -9,7 +9,7 @@ import { Sidebar, SidebarContent,
     SidebarGroupLabel,
     SidebarGroupContent} from "../ui/sidebar"; 
 import { NavLink, useLocation } from "react-router-dom";
-import DeskCraftLogo from "@/assets/DeskCraft-logo-2.png"
+import DeskCraftLogo from "@/assets/dc-logo.webp";
 
 
 
@@ -49,8 +49,8 @@ export function AdminSidebar({admin}: AdminSidebarProps) {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" tooltip="DeskCraft admin" render={<NavLink to="/dashboard" />}>
-                            <img src={DeskCraftLogo} alt="" aria-hidden="true" className="size-8 shrink-0 rounded-md object-contain"  />
-                            <span>DeskCraft Admin</span>
+                            <img src={DeskCraftLogo} alt="" aria-hidden="true" className="size-25 shrink-0 rounded-md object-contain"  />
+                            <span className="rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">Admin</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

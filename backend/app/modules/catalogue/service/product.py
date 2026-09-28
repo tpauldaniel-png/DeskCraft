@@ -52,7 +52,11 @@ class ProductService:
             name=product_data.name,
             description=product_data.description,
             slug=slug,
-            specifications=product_data.specifications,
+            specifications=(
+                product_data.specifications.model_dump(exclude_none=True)
+                if product_data.specifications
+                else None
+            ),
             category_id=product_data.category_id,
         )
 
@@ -143,7 +147,7 @@ class ProductService:
 
         return updated_product
 
-    async def get_product(self, product_id: UUID) -> Product:
+    async def get_product_by_id(self, product_id: UUID) -> Product:
         product = await self.product_repository.get_product_by_id(product_id)
 
         if product is None:

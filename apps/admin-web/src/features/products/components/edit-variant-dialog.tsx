@@ -2,17 +2,21 @@ import type { ApiErrorResponse } from "@/types/api"
 import { isAxiosError } from "axios"
 import { useUpdateVariant } from "../hooks/use-variants";
 
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import type { ProductVariant, } from "../types/variant";
+
+
+import type { ProductVariant } from "../types/variant";
+import { CreateVariantForm } from "./create-variant-form";
+
+import type { VariantFormData } from "../schemas/variant-form-schema";
 
 
 
 
 type EditVariantDialogProps = {
     variant: ProductVariant | null;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+    onClose: () => void;
+    onUpdated: () => void;
+    
 }
 
 
@@ -31,7 +35,7 @@ function UpdateVariantResponseError(error: unknown) {
 
 
 
-export function EditVariantDialog({open, onOpenChange, variant}: EditVariantDialogProps) {
+export function EditVariantDialog({onClose, variant, onUpdated}: EditVariantDialogProps) {
     const updateVariantMutation = useUpdateVariant();
     
 
@@ -43,27 +47,44 @@ export function EditVariantDialog({open, onOpenChange, variant}: EditVariantDial
 
     const errorMessage = updateVariantMutation.isError ? UpdateVariantResponseError(updateVariantMutation.error) : null;
 
+    const handleUpdateVariantForm = async (values: VariantFormData) => {
+        try {
+            await updateVariantMutation.mutateAsync({
+                variantId: variantId,
+                variantData: {
+                    name: values.name,
+                    sku: values.sku,
+                    price: values.price,
+                }
+            });
+            onClose();
+            onUpdated();
+        } catch (error) {
+            console.error(error);
+        }
+    };
     
 
 
     return(
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger render={<Button type="button">Edit Category</Button>} />
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit Variant</DialogTitle>
-                    <DialogDescription>
-                        Update the details of the variant.
-                    </DialogDescription>
-                </DialogHeader> 
+        
 
-                {errorMessage && (
-                    <p className="text-destructive text-sm">{errorMessage}</p>
-                )}
-
+            <CreateVariantForm
+                isOpen={true}
+                onClose={onClose}
+                onSubmit={handleUpdateVariantForm}
+                isPending={updateVariantMutation.isPending}
+                submitLabel="Update Variant"
+                loadingText="Updating Variant..."
+                errorMessage={errorMessage}
+                initialValues={{
+                    name: variant.name,
+                    sku: variant.sku,
+                    price: Number(variant.price),
+                }}
+            />
                 
-            </DialogContent>
-        </Dialog>
+         
     )
 }       
     

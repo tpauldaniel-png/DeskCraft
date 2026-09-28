@@ -21,7 +21,7 @@ export async function createProductVariant(variantData: ProductVariantCreateInpu
 }
 
 export async function updateProductVariant(variantId: string, variantData: ProductVariantUpdateInput): Promise<ProductVariant> {
-    const response = await apiClient.put<ProductVariant>(
+    const response = await apiClient.patch<ProductVariant>(
         `/api/v1/variants/${variantId}`,
         variantData
     );
