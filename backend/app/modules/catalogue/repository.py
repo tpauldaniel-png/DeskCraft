@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.models.category import Category
 from app.modules.catalogue.models.product import Product
+from app.modules.catalogue.models.product_images import ProductImage
 from app.modules.catalogue.models.variant import Variant
 
 
@@ -173,3 +174,48 @@ class VariantRepository:
         result = await self.db.execute(statement)
         variants = list(result.scalars().all())
         return variants, total
+
+
+class ProductImageRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def create_product_image(self, product_image: ProductImage) -> ProductImage:
+        self.db.add(product_image)
+        await self.db.flush()
+        return product_image
+
+    async def list_product_images_by_variant(
+        self, variant_id: UUID
+    ) -> list[ProductImage]:
+
+        statement = (
+            select(ProductImage)
+            .where(ProductImage.variant_id == variant_id)
+            .order_by(ProductImage.sort_order.asc(), ProductImage.created_at.asc())
+        )
+
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+    async def get_product_image_by_id(
+        self, product_image_id: UUID
+    ) -> ProductImage | None:
+        statement = select(ProductImage).where(
+            ProductImage.product_image_id == product_image_id
+        )
+        result = await self.db.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def get_primary_product_image_by_variant(
+        self, variant_id: UUID
+    ) -> ProductImage | None:
+        statement = select(ProductImage).where(
+            ProductImage.variant_id == variant_id, ProductImage.is_primary.is_(True)
+        )
+        result = await self.db.execute(statement)
+        return result.scalar_one_or_none()
+
+    async def update_product_image(self, product_image: ProductImage) -> ProductImage:
+        await self.db.flush()
+        return product_image

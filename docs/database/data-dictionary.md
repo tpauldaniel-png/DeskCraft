@@ -113,9 +113,9 @@ This serves as a single source of truth that helps to understand the context, fo
 | Field | Type | Constraints | Description |
 |---|---|---|---|
 | product_image_id | UUID | PK | Unique image identifier |
-| variant_id | UUID | NN, FK -> `product_variants.variant_id` | Product variant to which the image belongs |
-| image_url | TEXT | NN | url of the product variant image |
-| cloudinary_id | VARCHAR(255) | NULL ALLOWED | Cloudinary id of the image |
+| variant_id | UUID | NN, FK -> `variants.variant_id` | Product variant to which the image belongs |
+| image_url | TEXT | NN | Https url returned by the cloudinary |
+| cloudinary_public_id | VARCHAR(255) | NN | Cloudinary id of the image |
 | alt_text | VARCHAR(255) | NN | alternate text for the image |
 | sort_order | INTEGER | NN, DEFAULT `0` | To control gallery order |
 | is_primary | BOOLEAN | NN, DEFAULT `FALSE`| To identify the main image |
@@ -126,6 +126,7 @@ This serves as a single source of truth that helps to understand the context, fo
 **Relationship:**
 - Each product image belongs to exactly one variant.
 - One variant can have zero or many images.
+- Primary image: A variant can have many images, but atmost one can have is_primary = true. A unique partial index on variant_id enforces this rule.
 
 ## Inventory 
 
