@@ -52,7 +52,7 @@ async def list_variants(
     )
 
     return VariantListResponse(
-        items=[VariantResponse.model_validate(variant) for variant in variants],
+        items=variants,
         total=total,
         page=page,
         page_size=page_size,

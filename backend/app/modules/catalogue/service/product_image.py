@@ -4,6 +4,7 @@ from fastapi import UploadFile, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.product_images import ProductImage
 from app.modules.catalogue.repository import ProductImageRepository, VariantRepository
@@ -15,10 +16,9 @@ class ProductImageService:
         self.db = db
         self.repository = ProductImageRepository(db)
         self.cloudinary_storage = CloudinaryStorage(
-            cloud_name="your_cloud_name",
-            api_key="your_api_key",
-            api_secret="your_api_secret",
-            secure=True,
+            cloud_name=settings.cloudinary_cloud_name,
+            api_key=settings.cloudinary_api_key,
+            api_secret=settings.cloudinary_api_secret,
         )
 
     async def upload_product_image(

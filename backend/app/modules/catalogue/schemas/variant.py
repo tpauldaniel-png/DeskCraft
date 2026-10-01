@@ -50,6 +50,8 @@ class VariantResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     product_id: UUID
+    thumbnail_url: str | None = None
+    thumbnail_alt_text: str | None = None
 
 
 class VariantUpdate(BaseModel):

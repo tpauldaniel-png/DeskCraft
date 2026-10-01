@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -14,8 +15,8 @@ class ProductImageResponse(BaseModel):
     sort_order: int
     is_active: bool
     is_primary: bool
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class ProductImageListResponse(BaseModel):

@@ -8,10 +8,15 @@ from app.core.exceptions import AppException
 from app.modules.catalogue.models.variant import Variant
 from app.modules.catalogue.repository import (
     CategoryRepository,
+    ProductImageRepository,
     ProductRepository,
     VariantRepository,
 )
-from app.modules.catalogue.schemas.variant import VariantCreate, VariantUpdate
+from app.modules.catalogue.schemas.variant import (
+    VariantCreate,
+    VariantResponse,
+    VariantUpdate,
+)
 
 
 class VariantService:
@@ -20,6 +25,7 @@ class VariantService:
         self.variant_repository = VariantRepository(db)
         self.product_repository = ProductRepository(db)
         self.category_repository = CategoryRepository(db)
+        self.product_image_repository = ProductImageRepository(db)
 
     async def create_variant(self, variant_data: VariantCreate) -> Variant:
         product = await self.product_repository.get_product_by_id(
@@ -163,6 +169,26 @@ class VariantService:
         product_id: UUID | None = None,
         is_active: bool | None = None,
     ) -> tuple[list[Variant], int]:
-        return await self.variant_repository.list_variants(
+
+        variants, total = await self.variant_repository.list_variants(
             page, page_size, search, product_id, is_active
         )
+
+        thumbnails = await self.product_image_repository.get_thumbnail_for_variants(
+            [variant.variant_id for variant in variants]
+        )
+
+        items = []
+
+        for variant in variants:
+            image = thumbnails.get(variant.variant_id)
+
+            item = VariantResponse.model_validate(variant).model_copy(
+                update={
+                    "thumbnail_url": image.image_url if image else None,
+                    "thumbnail_alt_text": image.alt_text if image else None,
+                }
+            )
+            items.append(item)
+
+        return items, total

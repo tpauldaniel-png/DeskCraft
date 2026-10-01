@@ -1,4 +1,4 @@
-
+import { VariantImageManager } from "./variant-image-manager";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCreateVariant, useUpdateVariant, useVariants } from "../hooks/use-variants";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import type { VariantFormData } from "../schemas/variant-form-schema";
 import type { ApiErrorResponse } from "@/types/api";
 import { isAxiosError } from "axios";
 import { EditVariantDialog } from "./edit-variant-dialog";
+
 
 
 
@@ -42,6 +43,8 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
     const [page, setPage] = useState(1);
     const [isCreateVariantOpen, setIsCreateVariantOpen] = useState(false);
     const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
+
+    const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
     
 
 
@@ -167,6 +170,7 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
                 <TableCaption>Variants for the selected product</TableCaption>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Image</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Price</TableHead>
                         <TableHead>SKU</TableHead>
@@ -178,6 +182,18 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
                 <TableBody>
                     {variantItems.map((variant: ProductVariant) => (
                         <TableRow key={variant.variant_id}>
+                            <TableCell>
+                                {variant.thumbnail_url ? (
+                                    <img
+                                        src={variant.thumbnail_url}
+                                        alt={variant.thumbnail_alt_text || variant.name}
+                                        loading="lazy"
+                                        className="h-10 w-10 rounded-md object-contain bg-muted"
+                                    />
+                                ) : (
+                                    <div className="h-10 w-10 rounded-full bg-muted-foreground/10">No image</div>
+                                )}
+                            </TableCell>
                             <TableCell>{variant.name}</TableCell>
                             <TableCell>₹ {variant.price}</TableCell>
                             <TableCell>{variant.sku}</TableCell>
@@ -195,6 +211,10 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
 
                                 <Button type="button" variant="outline" size="sm" onClick={() => handleToggleStatus(variant)}>
                                     {variant.is_active ? "Deactivate" : "Activate"}
+                                </Button>
+
+                                <Button type="button" variant="outline" size="sm" className="ml-2" onClick={() => setSelectedVariantId(variant.variant_id)}>
+                                    Manage Images
                                 </Button>
                                 
                             </TableCell>
@@ -241,6 +261,9 @@ export function ManageVariantTab({ productId }: ManageVariantTabProps) {
                     }}
                 
                 />
+            )}
+            {selectedVariantId && (
+                <VariantImageManager variantId={selectedVariantId} />
             )}
         </section>
     )

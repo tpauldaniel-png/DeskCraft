@@ -9,6 +9,8 @@ export type ProductVariant = {
     is_active: boolean;
     created_at: string;
     updated_at: string;
+    thumbnail_url: string;
+    thumbnail_alt_text: string;
 };
 
 export type ProductVariantListResponse = {

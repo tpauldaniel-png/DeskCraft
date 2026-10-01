@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Path, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
@@ -22,7 +22,7 @@ router = APIRouter(
     "", status_code=status.HTTP_201_CREATED, response_model=ProductImageResponse
 )
 async def upload_product_image(
-    variant_id: Annotated[UUID, Query()],
+    variant_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
     image: UploadFile = File(...),
@@ -37,13 +37,13 @@ async def upload_product_image(
 
 @router.get("", response_model=ProductImageListResponse)
 async def list_product_images(
-    variant_id: Annotated[UUID, Query()],
+    variant_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
 ) -> ProductImageListResponse:
 
     service = ProductImageService(db)
-    product_images, total = await service.list_product_images(
+    product_images = await service.list_product_images_by_variant(
         variant_id=variant_id,
     )
 

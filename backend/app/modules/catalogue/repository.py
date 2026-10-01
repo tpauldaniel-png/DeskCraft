@@ -219,3 +219,34 @@ class ProductImageRepository:
     async def update_product_image(self, product_image: ProductImage) -> ProductImage:
         await self.db.flush()
         return product_image
+
+    async def get_thumbnail_for_variants(
+        self, variant_ids: list[UUID]
+    ) -> dict[UUID, ProductImage | None]:
+
+        if not variant_ids:
+            return {}
+
+        statement = (
+            select(ProductImage)
+            .where(
+                ProductImage.variant_id.in_(variant_ids),
+                ProductImage.is_active.is_(True),
+            )
+            .order_by(
+                ProductImage.variant_id.asc(),
+                ProductImage.is_primary.desc(),
+                ProductImage.sort_order.asc(),
+                ProductImage.created_at.asc(),
+                ProductImage.product_image_id.asc(),
+            )
+        )
+
+        result = await self.db.execute(statement)
+
+        thumbnails: dict[UUID, ProductImage | None] = {}
+
+        for image in result.scalars().all():
+            thumbnails.setdefault(image.variant_id, image)
+
+        return thumbnails
