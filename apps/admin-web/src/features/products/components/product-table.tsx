@@ -64,6 +64,7 @@ export function ProductTable({products, categories, onEdit, onToggleStatus, upda
                                         size="sm"
                                         onClick={() => onToggleStatus(product)}
                                         disabled={updatingProductId === product.product_id}
+                                        className="ml-2"
                                     >
                                         {product.is_active ? "Deactivate" : "Activate"}
                                     </Button>
@@ -72,6 +73,7 @@ export function ProductTable({products, categories, onEdit, onToggleStatus, upda
                                         variant="outline"
                                         size="sm"
                                         onClick={() => onVariant(product)}
+                                        className="ml-2"
                                     
                                     >
                                         Manage Variants

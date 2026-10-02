@@ -250,3 +250,21 @@ class ProductImageRepository:
             thumbnails.setdefault(image.variant_id, image)
 
         return thumbnails
+
+    async def list_images_for_reorder(self, variant_id: UUID) -> list[ProductImage]:
+        statement = (
+            select(ProductImage)
+            .where(ProductImage.variant_id == variant_id)
+            .with_for_update()
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
+
+    async def get_next_sort_order_for_variant(self, variant_id: UUID) -> int:
+        statement = select(func.max(ProductImage.sort_order)).where(
+            ProductImage.variant_id == variant_id
+        )
+        result = await self.db.execute(statement)
+        max_sort_order = result.scalar_one_or_none()
+        return (max_sort_order or 0) + 1

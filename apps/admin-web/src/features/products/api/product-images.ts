@@ -17,3 +17,25 @@ export async function createProductImage(variantId: string, imageData: FormData)
     );
     return response.data;
 }
+
+export  async function updateProductImageAltText(
+    variantId: string,
+    productImageId: string,
+    altText: string,
+): Promise<ProductImage> {
+    const response = await apiClient.patch<ProductImage>(
+        `/api/v1/variants/${variantId}/images/${productImageId}`,
+        { alt_text: altText },
+    );
+    return response.data;
+}
+
+export async function reorderProductImages(
+    variantId: string,
+    imageIds: string[],
+): Promise<void> {
+    await apiClient.put(
+        `/api/v1/variants/${variantId}/images/order`,
+        { image_ids: imageIds },
+    );
+}

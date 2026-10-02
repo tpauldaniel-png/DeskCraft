@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ProductImageResponse(BaseModel):
@@ -23,3 +23,14 @@ class ProductImageListResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     items: list[ProductImageResponse]
+
+
+class ProductImageAltTextUpdateRequest(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    alt_text: str = Field(min_length=1, max_length=255)
+
+class ProductImageReorderRequest(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    image_ids: list[UUID] = Field(min_length=1)

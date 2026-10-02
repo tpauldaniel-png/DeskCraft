@@ -30,7 +30,7 @@ export function ProductsPage() {
 
     const [page, setPage] = useState(1);    
 
-    const categoriesQuery = useCategories(page, PAGE_SIZE);
+    const categoriesQuery = useCategories(1, PAGE_SIZE);
     const categories = categoriesQuery.data?.items ?? [];
     
 

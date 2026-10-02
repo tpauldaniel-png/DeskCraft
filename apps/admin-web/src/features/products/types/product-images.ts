@@ -16,3 +16,7 @@ export type ProductImage = {
 export type ProductImageListResponse = {
     items: ProductImage[];
 };
+
+
+
+

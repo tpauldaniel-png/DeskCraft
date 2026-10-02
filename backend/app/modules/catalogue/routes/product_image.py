@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
 from app.modules.catalogue.schemas.product_image import (
+    ProductImageAltTextUpdateRequest,
     ProductImageListResponse,
+    ProductImageReorderRequest,
     ProductImageResponse,
 )
 from app.modules.catalogue.service.product_image import ProductImageService
@@ -53,3 +55,34 @@ async def list_product_images(
             for product_image in product_images
         ],
     )
+
+
+
+@router.patch("/{image_id}", response_model=ProductImageResponse)
+async def update_product_image(
+    variant_id: Annotated[UUID, Path()],
+    image_id: Annotated[UUID, Path()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(require_admin)],
+    payload:ProductImageAltTextUpdateRequest,
+) -> ProductImageResponse:
+
+    service = ProductImageService(db)
+    product_image = await service.update_product_image_alt_text(
+        product_image_id=image_id, new_alt_text=payload.alt_text, variant_id=variant_id
+    )
+
+    return ProductImageResponse.model_validate(product_image)
+
+
+
+@router.put("/order", status_code=status.HTTP_204_NO_CONTENT)
+async def reorder_product_images(
+    variant_id: Annotated[UUID, Path()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(require_admin)],
+    payload: ProductImageReorderRequest,
+) -> None:
+
+    service = ProductImageService(db)
+    await service.reorder_images(variant_id=variant_id, image_ids=payload.image_ids)
