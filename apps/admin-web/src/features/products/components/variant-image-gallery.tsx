@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useProductImages, useReorderProductImages, useUpdateProductImageAltText } from "../hooks/use-product-images";
+import { useProductImages, useReorderProductImages, useUpdateProductImageAltText, useDeleteProductImage } from "../hooks/use-product-images";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { FieldGroup, Field, FieldLabel, FieldError } from "@/components/ui/field";
@@ -13,6 +13,9 @@ export function ProductVariantImageGallery({ variantId }: { variantId: string })
     const { data, isLoading, isError } = useProductImages(variantId);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [currentImageId, setCurrentImageId] = useState<string | null>(null);
+
+    const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+    const deleteProductImageMutation = useDeleteProductImage(variantId);
     
     
 
@@ -57,6 +60,17 @@ export function ProductVariantImageGallery({ variantId }: { variantId: string })
         setIsEditDialogOpen(false);
     }
 
+    async function confirmDelete() {
+
+        if (!imageToDelete) return;
+        try {
+            await deleteProductImageMutation.mutateAsync(imageToDelete);
+            setImageToDelete(null);
+        } catch (error) {
+            console.error("Error deleting image:", error);
+        }
+    }
+
     return(
         <div className="flex flex-col gap-4">
             {isLoading && <p className="text-muted-foreground">Loading images...</p>}
@@ -76,32 +90,42 @@ export function ProductVariantImageGallery({ variantId }: { variantId: string })
                             />
                         </div>
                         <figcaption className="mt-2 space-y-1 p-3">
-                            <p className="text-sm font-medium">Position {index + 1}</p>
-                            <p className="text-muted-foreground line-clamp-2 text-sm max-w-40">
-                                {image.alt_text}
-                            </p>
-                            <Button type="button" variant="ghost" onClick={() => handleEditAltText(image.product_image_id, image.alt_text)} className="mt-2">
-                                Edit Alt Text
-                            </Button>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => handleMove(index, -1)}
-                                    disabled={index === 0 || reorderMutation.isPending}
-                                    className="p-3"
-                                >
-                                    {"<"}
+                            <div className="flex flex-col items-center">
+                                <p className="text-sm font-medium">Position {index + 1}</p>
+                                <p className="text-muted-foreground line-clamp-2 text-center">
+                                    {image.alt_text}
+                                </p>
+                                <Button type="button" variant="ghost" onClick={() => handleEditAltText(image.product_image_id, image.alt_text)} className="mt-2">
+                                    Edit Alt Text
                                 </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => handleMove(index, 1)}
-                                    disabled={index === data.items.length - 1 || reorderMutation.isPending}
-                                    className="p-3"
-                                >
-                                    {">"}
+
+                                <Button type="button" variant="destructive" onClick={() => {
+                                    deleteProductImageMutation.reset();
+                                    setImageToDelete(image.product_image_id);
+                                }} 
+                                    className="mt-2">
+                                    Delete Image
                                 </Button>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => handleMove(index, -1)}
+                                        disabled={index === 0 || reorderMutation.isPending}
+                                        className="p-3"
+                                    >
+                                        {"<"}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => handleMove(index, 1)}
+                                        disabled={index === data.items.length - 1 || reorderMutation.isPending}
+                                        className="p-3"
+                                    >
+                                        {">"}
+                                    </Button>
+                                </div>
                             </div>
                         </figcaption>
                     </figure>
@@ -144,6 +168,46 @@ export function ProductVariantImageGallery({ variantId }: { variantId: string })
 
 
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={imageToDelete !== null} onOpenChange={(open) => {
+                if (!open && !deleteProductImageMutation.isPending) {
+                    setImageToDelete(null);
+                }
+            }}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Confirm Delete</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete this image? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {deleteProductImageMutation.isError && (
+                        <p className="text-destructive text-sm mt-2">
+                            Error deleting image. Please try again.
+                        </p>
+                    )}
+
+                    <div className="mt-4 flex justify-end gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setImageToDelete(null)}
+                            disabled={deleteProductImageMutation.isPending}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={confirmDelete}
+                            disabled={deleteProductImageMutation.isPending}
+                        >
+                            {deleteProductImageMutation.isPending ? "Deleting..." : "Delete Image"}
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
         </div>

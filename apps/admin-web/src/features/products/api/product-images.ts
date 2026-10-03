@@ -39,3 +39,10 @@ export async function reorderProductImages(
         { image_ids: imageIds },
     );
 }
+
+
+export async function deleteProductImage(variantId: string, productImageId: string): Promise<void> {
+    await apiClient.delete(
+        `/api/v1/variants/${variantId}/images/${productImageId}`,
+    );
+}

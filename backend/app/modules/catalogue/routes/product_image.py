@@ -57,14 +57,13 @@ async def list_product_images(
     )
 
 
-
 @router.patch("/{image_id}", response_model=ProductImageResponse)
 async def update_product_image(
     variant_id: Annotated[UUID, Path()],
     image_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
-    payload:ProductImageAltTextUpdateRequest,
+    payload: ProductImageAltTextUpdateRequest,
 ) -> ProductImageResponse:
 
     service = ProductImageService(db)
@@ -73,7 +72,6 @@ async def update_product_image(
     )
 
     return ProductImageResponse.model_validate(product_image)
-
 
 
 @router.put("/order", status_code=status.HTTP_204_NO_CONTENT)
@@ -86,3 +84,17 @@ async def reorder_product_images(
 
     service = ProductImageService(db)
     await service.reorder_images(variant_id=variant_id, image_ids=payload.image_ids)
+
+
+@router.delete("/{product_image_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_product_image(
+    variant_id: Annotated[UUID, Path()],
+    product_image_id: Annotated[UUID, Path()],
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(require_admin)],
+) -> None:
+
+    service = ProductImageService(db)
+    await service.delete_product_image(
+        product_image_id=product_image_id, variant_id=variant_id
+    )

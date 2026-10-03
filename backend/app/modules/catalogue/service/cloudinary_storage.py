@@ -27,3 +27,18 @@ class CloudinaryStorage:
             "public_id": result["public_id"],
             "secure_url": result["secure_url"],
         }
+
+    async def delete_file(self, public_id: str) -> None:
+
+        result = await run_in_threadpool(
+            cloudinary.uploader.destroy,
+            public_id,
+            resource_type="image",
+            type="upload",
+            invalidate=True,
+        )
+
+        if result.get("result") not in {"ok", "not found"}:
+            raise Exception(
+                f"Failed to delete file with public_id {public_id}: {result}"
+            )

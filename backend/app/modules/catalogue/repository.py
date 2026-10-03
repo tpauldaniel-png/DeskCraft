@@ -260,7 +260,6 @@ class ProductImageRepository:
         result = await self.db.execute(statement)
         return list(result.scalars().all())
 
-
     async def get_next_sort_order_for_variant(self, variant_id: UUID) -> int:
         statement = select(func.max(ProductImage.sort_order)).where(
             ProductImage.variant_id == variant_id
@@ -268,3 +267,7 @@ class ProductImageRepository:
         result = await self.db.execute(statement)
         max_sort_order = result.scalar_one_or_none()
         return (max_sort_order or 0) + 1
+
+    async def delete_product_image(self, product_image: ProductImage) -> None:
+        await self.db.delete(product_image)
+        await self.db.flush()

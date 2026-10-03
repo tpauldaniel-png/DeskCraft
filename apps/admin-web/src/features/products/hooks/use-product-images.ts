@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createProductImage, getProductImages, reorderProductImages, updateProductImageAltText } from "../api/product-images";
+import { createProductImage, deleteProductImage, getProductImages, reorderProductImages, updateProductImageAltText } from "../api/product-images";
 
 
 
@@ -61,6 +61,25 @@ export function useReorderProductImages(variantId: string) {
 
     return useMutation({
         mutationFn: (imageIds: string[]) => reorderProductImages(variantId, imageIds),
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({
+                    queryKey: productImageKeys.list(variantId),
+                }),
+                queryClient.invalidateQueries({
+                    queryKey: ["variants"],
+                }),
+            ]);
+        },
+    });
+}
+
+
+export function useDeleteProductImage(variantId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (productImageId: string) => deleteProductImage(variantId, productImageId),
         onSuccess: async () => {
             await Promise.all([
                 queryClient.invalidateQueries({

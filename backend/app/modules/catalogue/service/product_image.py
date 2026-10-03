@@ -20,7 +20,6 @@ class ProductImageService:
             api_key=settings.cloudinary_api_key,
             api_secret=settings.cloudinary_api_secret,
         )
-        
 
     async def upload_product_image(
         self, variant_id: UUID, image: UploadFile, alt_text: str
@@ -69,7 +68,9 @@ class ProductImageService:
 
         try:
             upload_result = await self.cloudinary_storage.upload_file(image)
-            next_sort_order = await self.repository.get_next_sort_order_for_variant(variant_id)
+            next_sort_order = await self.repository.get_next_sort_order_for_variant(
+                variant_id
+            )
             product_image = ProductImage(
                 variant_id=variant_id,
                 image_url=upload_result["secure_url"],
@@ -118,7 +119,6 @@ class ProductImageService:
         )
         return product_images
 
-
     async def update_product_image_alt_text(
         self, product_image_id: UUID, new_alt_text: str, variant_id: UUID
     ) -> ProductImage:
@@ -131,11 +131,7 @@ class ProductImageService:
                 message="Variant not found",
             )
 
-        
-
-        product_image = await self.repository.get_product_image_by_id(
-            product_image_id
-        )
+        product_image = await self.repository.get_product_image_by_id(product_image_id)
         if not product_image:
             raise AppException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -185,8 +181,9 @@ class ProductImageService:
 
         return updated_product_image
 
-
-    async def reorder_images(self, variant_id: UUID, image_ids: list[UUID]) -> list[ProductImage]:
+    async def reorder_images(
+        self, variant_id: UUID, image_ids: list[UUID]
+    ) -> list[ProductImage]:
         variant = await VariantRepository(self.db).get_variant_by_id(variant_id)
         if not variant:
             raise AppException(
@@ -202,11 +199,10 @@ class ProductImageService:
             for image in images:
                 images_by_id[image.product_image_id] = image
 
-            if(
-                len(images) != len(image_ids) or
-                len(set(image_ids)) != len(image_ids) or
-                set(image_ids) != set(images_by_id)
-
+            if (
+                len(images) != len(image_ids)
+                or len(set(image_ids)) != len(image_ids)
+                or set(image_ids) != set(images_by_id)
             ):
                 raise AppException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -227,4 +223,54 @@ class ProductImageService:
                 message="Failed to reorder images due to a database error.",
             )
 
-        
+    async def delete_product_image(
+        self, product_image_id: UUID, variant_id: UUID
+    ) -> None:
+
+        image = await self.repository.get_product_image_by_id(product_image_id)
+
+        if image is None or image.variant_id != variant_id:
+            raise AppException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                code="PRODUCT_IMAGE_NOT_FOUND",
+                message="Product image not found for the specified variant.",
+            )
+
+        public_id = image.cloudinary_public_id
+
+        if not public_id:
+            raise AppException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                code="CLOUDINARY_PUBLIC_ID_MISSING",
+                message="Cloudinary public ID is missing for the product image.",
+            )
+
+        try:
+            await self.cloudinary_storage.delete_file(public_id)
+
+        except Exception as e:
+            raise AppException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                code="CLOUDINARY_DELETE_FAILED",
+                message=f"Failed to delete image from Cloudinary: {str(e)}",
+            )
+
+        try:
+            await self.repository.delete_product_image(image)
+
+            remaining_images = await self.repository.list_product_images_by_variant(
+                variant_id
+            )
+
+            for position, img in enumerate(remaining_images, start=1):
+                img.sort_order = position
+
+            await self.db.commit()
+
+        except SQLAlchemyError as error:
+            await self.db.rollback()
+            raise AppException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                code="PRODUCT_IMAGE_DELETE_FAILED",
+                message="Failed to delete product image due to a database error.",
+            ) from error
