@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import RowMapping, and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.models.category import Category
@@ -271,3 +271,102 @@ class ProductImageRepository:
     async def delete_product_image(self, product_image: ProductImage) -> None:
         await self.db.delete(product_image)
         await self.db.flush()
+
+
+class PublicProductRepository:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def list_public_products(
+        self,
+        page: int,
+        page_size: int,
+        search: str | None = None,
+        category_id: UUID | None = None,
+    ) -> tuple[list[RowMapping], int]:
+        offset = (page - 1) * page_size
+
+        # Rank active variants from cheapest to most expensive for each product using window function
+        ranked_variants = (
+            select(
+                Variant.variant_id,
+                Variant.product_id,
+                Variant.price,
+                func.row_number()
+                .over(
+                    partition_by=Variant.product_id,
+                    order_by=(Variant.price.asc(), Variant.variant_id.asc()),
+                )
+                .label("variant_rank"),
+            )
+            .where(Variant.is_active.is_(True))
+            .subquery()
+        )
+
+        # Pick one image for each ranked variant, prioritizing primary images and then by sort order and creation date
+
+        image_url = (
+            select(ProductImage.image_url)
+            .where(ProductImage.variant_id == ranked_variants.c.variant_id)
+            .order_by(
+                ProductImage.is_primary.desc(),
+                ProductImage.sort_order.asc(),
+                ProductImage.created_at.asc(),
+                ProductImage.product_image_id.asc(),
+            )
+            .limit(1)
+            .correlate(ranked_variants)
+            .scalar_subquery()
+        )
+
+        # Build the main query to fetch products with their starting price and image URL
+
+        conditions = [
+            Product.is_active.is_(True),
+            Category.is_active.is_(True),
+        ]
+
+        if category_id is not None:
+            conditions.append(Product.category_id == category_id)
+
+        if search is not None and search.strip():
+            search_value = f"%{search.strip()}%"
+            conditions.append(Product.name.ilike(search_value))
+
+        count_statement = (
+            select(func.count(Product.product_id))
+            .join(Category, Product.category_id == Category.category_id)
+            .where(*conditions)
+        )
+
+        count_result = await self.db.execute(count_statement)
+        total = count_result.scalar_one()
+
+        statement = (
+            select(
+                Product.product_id,
+                Product.category_id,
+                Category.name.label("category_name"),
+                Product.name,
+                Product.slug,
+                ranked_variants.c.price.label("starting_price"),
+                image_url.label("image_url"),
+            )
+            .select_from(Product)
+            .join(Category, Product.category_id == Category.category_id)
+            .outerjoin(
+                ranked_variants,
+                and_(
+                    Product.product_id == ranked_variants.c.product_id,
+                    ranked_variants.c.variant_rank == 1,
+                ),
+            )
+            .where(*conditions)
+            .order_by(Product.name.asc(), Product.product_id.asc())
+            .offset(offset)
+            .limit(page_size)
+        )
+
+        result = await self.db.execute(statement)
+        items = list(result.mappings().all())
+        return items, total
