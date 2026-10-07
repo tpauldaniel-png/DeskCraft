@@ -1,5 +1,7 @@
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 
 type FeaturedProduct = {
@@ -67,7 +69,7 @@ export function FeaturedProductsSection() {
         
         >
             <div className="px-4 sm:px-6 lg:px-section mx-auto max-w-7xl">
-                <div className="mb-8 max-w-2xl sm:mb-10">
+                <div className="mb-8 sm:mb-10">
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
                         Customer Favourites
                     </p>
@@ -75,11 +77,25 @@ export function FeaturedProductsSection() {
                     <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                         Featured Products
                     </h2>
+                    <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-baseline md:justify-between md:gap-6">
+                        <p className="max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+                            Thoughtfully selected essentials for healthier and more comfortable workspace
+                        </p>
 
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">
-                        Thougtfully selected essentials for healthier and more comfortable workspace
-                    </p>
+                        <Link
+                            to="/products"
+                            className="inline-flex shrink-0 items-center gap-2 self-start whitespace-nowrap text-sm font-semibold leading-6 text-primary hover:underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring md:self-auto"
+                        >
+                            Shop All Products
+                            <ArrowRight className="size-4" />
+                        </Link>
+                        
+                    </div>
+
+                    
+                    
                 </div>
+                
 
                 <Carousel
                     opts={{

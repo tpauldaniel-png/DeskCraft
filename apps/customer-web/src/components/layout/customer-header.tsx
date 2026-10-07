@@ -16,6 +16,7 @@ type NavItemsProps = {
 
 const navItems : NavItemsProps[] = [
     {label: "Home", href: "/"},
+    {label: "Shop", href: "/products"},
     {label: "Shop by Need", href: "#shop-by-need"},
     {label: "Featured", href: "#featured"},
     {label: "AI Workspace Assistant", href:"#ai-assistant"},
