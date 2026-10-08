@@ -109,3 +109,6 @@ class CatalogueService:
             raise
 
         return updated_category
+
+    async def list_public_categories(self) -> list[Category]:
+        return await self.repository.list_public_categories()

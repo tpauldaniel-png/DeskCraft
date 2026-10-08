@@ -64,3 +64,11 @@ class CategoryListResponse(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class PublicCategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    category_id: UUID
+    name: str
+    description: str | None

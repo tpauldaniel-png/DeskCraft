@@ -10,6 +10,9 @@ from app.modules.auth.routes import router as auth_router
 from app.modules.catalogue.routes.category import router as catalogue_router
 from app.modules.catalogue.routes.product import router as product_router
 from app.modules.catalogue.routes.product_image import router as product_image_router
+from app.modules.catalogue.routes.public_category import (
+    router as public_category_router,
+)
 from app.modules.catalogue.routes.public_product import router as public_product_router
 from app.modules.catalogue.routes.variant import router as variant_router
 
@@ -58,6 +61,7 @@ def create_application() -> FastAPI:
     application.include_router(variant_router)
     application.include_router(product_image_router)
     application.include_router(public_product_router)
+    application.include_router(public_category_router)
 
     @application.get("/", tags=["Root"])
     async def root() -> dict[str, str]:

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_db
 from app.modules.catalogue.schemas.public_product import (
+    ProductSort,
     PublicProductListResponse,
 )
 from app.modules.catalogue.service.public_product import PublicProductService
@@ -20,6 +21,7 @@ async def list_public_products(
     page_size: Annotated[int, Query(ge=1, le=100)] = 20,
     search: Annotated[str | None, Query(max_length=200)] = None,
     category_id: Annotated[UUID | None, Query()] = None,
+    sort: Annotated[ProductSort, Query()] = "name_asc",
 ) -> PublicProductListResponse:
 
     service = PublicProductService(db)
@@ -28,6 +30,7 @@ async def list_public_products(
         page_size=page_size,
         search=search,
         category_id=category_id,
+        sort=sort,
     )
 
     return PublicProductListResponse(
@@ -35,4 +38,5 @@ async def list_public_products(
         total=total,
         page=page,
         page_size=page_size,
+        sort=sort,
     )

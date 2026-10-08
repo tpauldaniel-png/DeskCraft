@@ -51,6 +51,15 @@ class CategoryRepository:
 
         return category
 
+    async def list_public_categories(self) -> list[Category]:
+        statement = (
+            select(Category)
+            .where(Category.is_active.is_(True))
+            .order_by(Category.name.asc(), Category.category_id.asc())
+        )
+        result = await self.db.execute(statement)
+        return list(result.scalars().all())
+
 
 class ProductRepository:
     def __init__(self, db: AsyncSession):
@@ -283,6 +292,7 @@ class PublicProductRepository:
         page_size: int,
         search: str | None = None,
         category_id: UUID | None = None,
+        sort: str | None = None,
     ) -> tuple[list[RowMapping], int]:
         offset = (page - 1) * page_size
 
@@ -333,6 +343,24 @@ class PublicProductRepository:
             search_value = f"%{search.strip()}%"
             conditions.append(Product.name.ilike(search_value))
 
+        if sort is not None:
+            if sort == "price_asc":
+                product_order_by = [
+                    ranked_variants.c.price.asc().nulls_last(),
+                    Product.product_id.asc(),
+                ]
+            elif sort == "price_desc":
+                product_order_by = [
+                    ranked_variants.c.price.desc().nulls_last(),
+                    Product.product_id.asc(),
+                ]
+            elif sort == "name_asc":
+                product_order_by = [Product.name.asc(), Product.product_id.asc()]
+            elif sort == "name_desc":
+                product_order_by = [Product.name.desc(), Product.product_id.asc()]
+            else:
+                product_order_by = [Product.name.asc(), Product.product_id.asc()]
+
         count_statement = (
             select(func.count(Product.product_id))
             .join(Category, Product.category_id == Category.category_id)
@@ -362,7 +390,7 @@ class PublicProductRepository:
                 ),
             )
             .where(*conditions)
-            .order_by(Product.name.asc(), Product.product_id.asc())
+            .order_by(*product_order_by)
             .offset(offset)
             .limit(page_size)
         )

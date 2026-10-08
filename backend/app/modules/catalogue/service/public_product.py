@@ -3,7 +3,10 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.repository import PublicProductRepository
-from app.modules.catalogue.schemas.public_product import PublicProductCardResponse
+from app.modules.catalogue.schemas.public_product import (
+    ProductSort,
+    PublicProductCardResponse,
+)
 
 
 class PublicProductService:
@@ -16,6 +19,7 @@ class PublicProductService:
         page_size: int = 10,
         search: str | None = None,
         category_id: UUID | None = None,
+        sort: ProductSort = "name_asc",
     ) -> tuple[list[PublicProductCardResponse], int]:
 
         items, total = await self.repository.list_public_products(
@@ -23,6 +27,7 @@ class PublicProductService:
             page_size=page_size,
             search=search,
             category_id=category_id,
+            sort=sort,
         )
 
         items = [PublicProductCardResponse.model_validate(item) for item in items]
