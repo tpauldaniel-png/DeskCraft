@@ -35,7 +35,7 @@ const authNavItems: NavItemsProps[] = [
 export function CustomerHeader() {
     return (
         <header>
-            <div className="bg-background">
+            <div className="bg-card shadow-sm border-b border-border/70">
                 <div className="mx-auto flex h-16 items-center w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="size-30 flex items-center">
                         <a href="/">

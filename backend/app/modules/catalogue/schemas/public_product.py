@@ -33,3 +33,5 @@ class PublicProductListResponse(BaseModel):
     page: int
     page_size: int
     sort: ProductSort = "name_asc"
+    min_price: Decimal | None
+    max_price: Decimal | None

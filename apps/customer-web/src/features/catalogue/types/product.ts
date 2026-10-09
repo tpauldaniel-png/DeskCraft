@@ -18,6 +18,8 @@ export type ProductListResponse = {
     page: number;
     page_size: number;
     sort: ProductSort;
+    min_price: string | null;
+    max_price: string | null;
 }
 
 
@@ -27,4 +29,6 @@ export type ProductListParams = {
     search?: string;
     category_id?: string;
     sort?: ProductSort;
+    min_price?: number;
+    max_price?: number;
 }

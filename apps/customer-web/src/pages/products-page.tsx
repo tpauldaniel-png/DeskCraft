@@ -9,8 +9,18 @@ import type { ProductSort } from "@/features/catalogue/types/product";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup,DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuTrigger, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { ProductPagination } from "@/features/catalogue/components/product-pagination";
+import { ProductPriceFilter } from "@/features/catalogue/components/product-price-filter";
 
 
+
+function parsePriceParam(value: string | null): number | undefined {
+    if (value === null || value.trim() === "") {
+        return undefined;
+    }
+
+    const price = Number(value);
+    return Number.isFinite(price) && price >= 0 ? price : undefined;
+}
 
 
 
@@ -34,10 +44,13 @@ export function ProductsPage() {
         sortValue === "price_desc" 
             ? sortValue 
             : "name_asc";
+    
+    const min_price = parsePriceParam(searchParams.get("min_price"));
+    const max_price = parsePriceParam(searchParams.get("max_price"));
 
     const publicCategoriesQuery = usePublicCategories();
 
-    const productsQuery = useProducts({page, page_size: PAGE_SIZE, category_id: activeCategoryId, sort});
+    const productsQuery = useProducts({page, page_size: PAGE_SIZE, category_id: activeCategoryId, sort, min_price, max_price});
 
     const selectedCategory = publicCategoriesQuery.data?.find(category => category.category_id === activeCategoryId);
 
@@ -59,9 +72,41 @@ export function ProductsPage() {
         });
     }
 
+    function handlePriceFilterApply(minPrice: number | undefined, maxPrice: number | undefined) {
+        setSearchParams((prevParams) => {
+            const updatedParams = new URLSearchParams(prevParams);
+
+            if (minPrice !== undefined) {
+                updatedParams.set("min_price", minPrice.toString());
+            } else {
+                updatedParams.delete("min_price");
+            }
+
+            if (maxPrice !== undefined) {
+                updatedParams.set("max_price", maxPrice.toString());
+            } else {
+                updatedParams.delete("max_price");
+            }
+
+            updatedParams.set("page", "1");
+            return updatedParams;
+        });
+    }
+
+    function handlePriceFilterReset() {
+        setSearchParams((prevParams) => {
+            const updatedParams = new URLSearchParams(prevParams);
+            updatedParams.delete("min_price");
+            updatedParams.delete("max_price");
+            updatedParams.set("page", "1");
+            return updatedParams;
+        });
+    }
+
+    
 
     return (
-        <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
             <header className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
@@ -109,31 +154,43 @@ export function ProductsPage() {
                     <CategoryNavigation categories={publicCategoriesQuery.data} activeCategoryId={activeCategoryId} />
                 )}
 
-                <div className="flex justify-end">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger
-                        render={<Button 
-                            type="button"
-                            variant="outline"
-                            className="w-full justify-between md:w-auto"
-                        />}
-                    >
-                        <span className="truncate">Sort Products</span>
-                        <ChevronDown className="size-4 opacity-30"/>
-                    </DropdownMenuTrigger>
+                <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between">
+                    <ProductPriceFilter
+                        key={`${min_price ?? "none"}: ${max_price ?? "none"}`}
+                        minPrice={min_price}
+                        maxPrice={max_price}
+                        onApply={handlePriceFilterApply}
+                        onReset={handlePriceFilterReset}
+                    />
+                    
+                    
 
-                    <DropdownMenuContent>
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel>Sort Products</DropdownMenuLabel>
-                            <DropdownMenuRadioGroup value={sort} onValueChange={(value) => handleSortChange(value as ProductSort)}>
-                                <DropdownMenuRadioItem value="name_asc">Name (A-Z)</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="name_desc">Name (Z-A)</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="price_asc">Price (Low to High)</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="price_desc">Price (High to Low)</DropdownMenuRadioItem>
-                            </DropdownMenuRadioGroup>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="w-full space-y-1.5 lg:w-48 lg:shrink-0">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger
+                            render={<Button 
+                                type="button"
+                                variant="outline"
+                                className="w-full justify-between md:w-auto"
+                            />}
+                        >
+                            <span className="truncate">Sort Products</span>
+                            <ChevronDown className="size-4 opacity-30"/>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent>
+                            <DropdownMenuGroup>
+                                <DropdownMenuLabel>Sort Products</DropdownMenuLabel>
+                                <DropdownMenuRadioGroup value={sort} onValueChange={(value) => handleSortChange(value as ProductSort)}>
+                                    <DropdownMenuRadioItem value="name_asc">Name (A-Z)</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="name_desc">Name (Z-A)</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="price_asc">Price (Low to High)</DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value="price_desc">Price (High to Low)</DropdownMenuRadioItem>
+                                </DropdownMenuRadioGroup>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
 
 
@@ -180,6 +237,8 @@ export function ProductsPage() {
                         onPageChange={handlePageChange}
                     />
                 )}
+
+                
 
 
                 

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Annotated
 from uuid import UUID
 
@@ -22,6 +23,8 @@ async def list_public_products(
     search: Annotated[str | None, Query(max_length=200)] = None,
     category_id: Annotated[UUID | None, Query()] = None,
     sort: Annotated[ProductSort, Query()] = "name_asc",
+    min_price: Annotated[Decimal | None, Query(ge=0)] = None,
+    max_price: Annotated[Decimal | None, Query(ge=0)] = None,
 ) -> PublicProductListResponse:
 
     service = PublicProductService(db)
@@ -31,6 +34,8 @@ async def list_public_products(
         search=search,
         category_id=category_id,
         sort=sort,
+        min_price=min_price,
+        max_price=max_price,
     )
 
     return PublicProductListResponse(
@@ -39,4 +44,6 @@ async def list_public_products(
         page=page,
         page_size=page_size,
         sort=sort,
+        min_price=min_price,
+        max_price=max_price,
     )

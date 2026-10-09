@@ -1,3 +1,4 @@
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import RowMapping, and_, func, select
@@ -293,6 +294,8 @@ class PublicProductRepository:
         search: str | None = None,
         category_id: UUID | None = None,
         sort: str | None = None,
+        min_price: Decimal | None = None,
+        max_price: Decimal | None = None,
     ) -> tuple[list[RowMapping], int]:
         offset = (page - 1) * page_size
 
@@ -361,9 +364,22 @@ class PublicProductRepository:
             else:
                 product_order_by = [Product.name.asc(), Product.product_id.asc()]
 
+        if min_price is not None:
+            conditions.append(ranked_variants.c.price >= min_price)
+        if max_price is not None:
+            conditions.append(ranked_variants.c.price <= max_price)
+
         count_statement = (
             select(func.count(Product.product_id))
+            .select_from(Product)
             .join(Category, Product.category_id == Category.category_id)
+            .outerjoin(
+                ranked_variants,
+                and_(
+                    Product.product_id == ranked_variants.c.product_id,
+                    ranked_variants.c.variant_rank == 1,
+                ),
+            )
             .where(*conditions)
         )
 
