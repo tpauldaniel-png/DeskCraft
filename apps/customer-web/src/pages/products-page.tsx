@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup,DropdownMenuLabel,
 import { ChevronDown } from "lucide-react";
 import { ProductPagination } from "@/features/catalogue/components/product-pagination";
 import { ProductPriceFilter } from "@/features/catalogue/components/product-price-filter";
+import { ProductSearch } from "@/features/catalogue/components/product-search";
 
 
 
@@ -48,11 +49,17 @@ export function ProductsPage() {
     const min_price = parsePriceParam(searchParams.get("min_price"));
     const max_price = parsePriceParam(searchParams.get("max_price"));
 
+    const searchText = searchParams.get("search") || "";
+
+
+
     const publicCategoriesQuery = usePublicCategories();
 
-    const productsQuery = useProducts({page, page_size: PAGE_SIZE, category_id: activeCategoryId, sort, min_price, max_price});
+    const productsQuery = useProducts({page, page_size: PAGE_SIZE, category_id: activeCategoryId, sort, min_price, max_price, search: searchText});
 
     const selectedCategory = publicCategoriesQuery.data?.find(category => category.category_id === activeCategoryId);
+
+    
 
     function handleSortChange(newSort: ProductSort) {
         setSearchParams((prevParams) => {
@@ -103,7 +110,20 @@ export function ProductsPage() {
         });
     }
 
-    
+    function handleSearch(query: string) {
+        const trimmedQuery = query.trim();
+
+        setSearchParams((prevParams) => {
+            const updatedParams = new URLSearchParams(prevParams);
+            if (trimmedQuery) {
+                updatedParams.set("search", trimmedQuery);
+            } else {
+                updatedParams.delete("search");
+            }
+            updatedParams.set("page", "1");
+            return updatedParams;
+        });
+    }
 
     return (
         <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
@@ -149,10 +169,29 @@ export function ProductsPage() {
                         </Button>
                     </div>
                 )}
+
                 
-                {publicCategoriesQuery.isSuccess && (
-                    <CategoryNavigation categories={publicCategoriesQuery.data} activeCategoryId={activeCategoryId} />
-                )}
+                <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                    <div className="min-w-0 flex-1">
+                        {publicCategoriesQuery.isSuccess && (
+                            <CategoryNavigation categories={publicCategoriesQuery.data} activeCategoryId={activeCategoryId} />
+                        )}
+                    </div>
+
+                    <div className="w-full xl:w-125 xl:shrink-0">
+                        <ProductSearch
+                            key={searchText}
+                            searchText={searchText} 
+                            onSearch={handleSearch} 
+                        />
+                    </div>
+                </div>
+
+                
+
+                
+
+
 
                 <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 sm:p-5 lg:flex-row lg:items-start lg:justify-between">
                     <ProductPriceFilter
