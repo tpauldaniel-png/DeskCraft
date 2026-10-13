@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.modules.catalogue.schemas.public_product import (
     ProductSort,
+    PublicProductDetailResponse,
     PublicProductListResponse,
 )
 from app.modules.catalogue.service.public_product import PublicProductService
@@ -47,3 +48,13 @@ async def list_public_products(
         min_price=min_price,
         max_price=max_price,
     )
+
+
+@router.get("/{slug}", response_model=PublicProductDetailResponse)
+async def get_public_product_by_slug(
+    slug: str, db: Annotated[AsyncSession, Depends(get_db)]
+):
+    service = PublicProductService(db)
+    product = await service.get_public_product_by_slug(slug=slug)
+
+    return product

@@ -2,7 +2,7 @@
 
 
 import type { ProductListParams } from '../types/product';
-import { getProducts } from '../api/product-api';
+import { getProducts, getProductBySlug } from '../api/product-api';
 import { useQuery } from '@tanstack/react-query';
 
 const productKeys = {
@@ -17,3 +17,17 @@ export function useProducts(params: ProductListParams) {
         queryFn: () => getProducts(params),
     });
 }
+
+export function useProductDetail(slug: string | undefined) {
+    return useQuery({
+        queryKey: ['products', 'detail', slug],
+        queryFn: () => {
+            if (!slug) {
+                throw new Error('Slug is required to fetch product detail');
+            }
+            return getProductBySlug(slug);
+        },
+        enabled: Boolean(slug),
+    });
+}
+

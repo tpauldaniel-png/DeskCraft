@@ -414,3 +414,73 @@ class PublicProductRepository:
         result = await self.db.execute(statement)
         items = list(result.mappings().all())
         return items, total
+
+    async def get_public_product_by_slug(self, slug: str) -> RowMapping | None:
+
+        statement = (
+            select(
+                Product.product_id,
+                Product.category_id,
+                Category.name.label("category_name"),
+                Product.name,
+                Product.slug,
+                Product.description,
+                Product.specifications,
+            )
+            .select_from(Product)
+            .join(Category, Product.category_id == Category.category_id)
+            .where(
+                Product.slug == slug,
+                Product.is_active.is_(True),
+                Category.is_active.is_(True),
+            )
+        )
+
+        result = await self.db.execute(statement)
+        return result.mappings().one_or_none()
+
+    async def list_public_product_variants(self, product_id: UUID) -> list[RowMapping]:
+
+        statement = (
+            select(
+                Variant.variant_id,
+                Variant.name,
+                Variant.price,
+            )
+            .where(Variant.product_id == product_id, Variant.is_active.is_(True))
+            .order_by(Variant.price.asc(), Variant.variant_id.asc())
+        )
+
+        result = await self.db.execute(statement)
+        return list(result.mappings().all())
+
+    async def list_public_variant_images(
+        self, variant_ids: list[UUID]
+    ) -> list[RowMapping]:
+
+        if not variant_ids:
+            return []
+
+        statement = (
+            select(
+                ProductImage.product_image_id,
+                ProductImage.variant_id,
+                ProductImage.image_url,
+                ProductImage.alt_text,
+                ProductImage.is_primary,
+                ProductImage.sort_order,
+            )
+            .where(
+                ProductImage.variant_id.in_(variant_ids),
+            )
+            .order_by(
+                ProductImage.variant_id.asc(),
+                ProductImage.is_primary.desc(),
+                ProductImage.sort_order.asc(),
+                ProductImage.created_at.asc(),
+                ProductImage.product_image_id.asc(),
+            )
+        )
+
+        result = await self.db.execute(statement)
+        return list(result.mappings().all())

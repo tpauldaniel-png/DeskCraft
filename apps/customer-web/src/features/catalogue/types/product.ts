@@ -32,3 +32,40 @@ export type ProductListParams = {
     min_price?: number;
     max_price?: number;
 }
+
+
+
+export type ProductDetailVariantImage = {
+    product_image_id: string;
+    image_url: string;
+    alt_text: string | null;
+    is_primary: boolean;
+    sort_order: number;
+};
+
+export type ProductDetailVariant = {
+    variant_id: string;
+    name: string;
+    price: string;
+    images: ProductDetailVariantImage[];
+};
+
+export type ProductSpecification = {
+    material: string | null;
+    adjustment_feature: string | null;
+    max_load_kg: number | null;
+    assembly_required: boolean | null;
+};
+
+
+
+export type ProductDetail = {
+    product_id: string;
+    category_id: string;
+    category_name: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    specifications: ProductSpecification | null;
+    variants: ProductDetailVariant[];
+}

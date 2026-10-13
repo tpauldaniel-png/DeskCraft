@@ -8,6 +8,9 @@ from app.modules.catalogue.repository import PublicProductRepository
 from app.modules.catalogue.schemas.public_product import (
     ProductSort,
     PublicProductCardResponse,
+    PublicProductDetailResponse,
+    PublicProductVariant,
+    PublicProductVariantImage,
 )
 
 
@@ -60,4 +63,71 @@ class PublicProductService:
                 status_code=500,
                 code="INTERNAL_SERVER_ERROR",
                 message="An unexpected error occurred while listing public products",
+            ) from e
+
+    async def get_public_product_by_slug(
+        self, slug: str
+    ) -> PublicProductDetailResponse:
+
+        try:
+            product = await self.repository.get_public_product_by_slug(slug=slug)
+
+            if not product:
+                raise AppException(
+                    status_code=404,
+                    code="PRODUCT_NOT_FOUND",
+                    message="Product not found",
+                )
+
+            variant_rows = await self.repository.list_public_product_variants(
+                product_id=product["product_id"]
+            )
+
+            variant_ids = [variant["variant_id"] for variant in variant_rows]
+
+            image_rows = await self.repository.list_public_variant_images(
+                variant_ids=variant_ids
+            )
+
+            images_by_variant: dict[UUID, list[PublicProductVariantImage]] = {}
+
+            for image in image_rows:
+                variant_id = image["variant_id"]
+
+                if variant_id not in images_by_variant:
+                    images_by_variant[variant_id] = []
+
+                images_by_variant[variant_id].append(
+                    PublicProductVariantImage.model_validate(image)
+                )
+
+            variants = [
+                PublicProductVariant(
+                    variant_id=variant["variant_id"],
+                    name=variant["name"],
+                    price=variant["price"],
+                    images=images_by_variant.get(variant["variant_id"], []),
+                )
+                for variant in variant_rows
+            ]
+
+            return PublicProductDetailResponse(
+                product_id=product["product_id"],
+                category_id=product["category_id"],
+                category_name=product["category_name"],
+                name=product["name"],
+                slug=product["slug"],
+                description=product["description"],
+                specifications=product["specifications"],
+                variants=variants,
+            )
+
+        except AppException:
+            raise
+
+        except Exception as e:
+            raise AppException(
+                status_code=500,
+                code="INTERNAL_SERVER_ERROR",
+                message="An unexpected error occurred while retrieving public product by slug",
             ) from e
