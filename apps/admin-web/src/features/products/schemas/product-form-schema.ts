@@ -16,7 +16,13 @@ export const productFormSchema = z.object({
         .optional(),
     category_id: z
         .string()
-        .min(1, "Category is required")
+        .min(1, "Category is required"),
+    specifications: z.object({
+        material: z.string().nullable(),
+        adjustment_feature: z.string().nullable(),
+        max_load_kg: z.number().nullable(),
+        assembly_required: z.boolean().nullable(),
+    }).optional()
     
     
 })

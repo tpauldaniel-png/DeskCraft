@@ -4,11 +4,14 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb,BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ProductDetailContent } from "@/features/catalogue/components/product-detail-content";
+import { ProductSpecifications } from "@/features/catalogue/components/product-specifications";
+import { RelatedProductsSection } from "@/features/catalogue/components/related-products-section";
 
 export function ProductDetailPage() {
 
     const {slug} = useParams<{slug: string}>();
     const productDetailQuery = useProductDetail(slug);
+    
 
     if (productDetailQuery.isLoading) {
         return(
@@ -93,7 +96,8 @@ export function ProductDetailPage() {
             </Breadcrumb>
 
             <ProductDetailContent product={product} />
-            
+            <ProductSpecifications specifications={product.specifications} />
+            <RelatedProductsSection categoryId={product.category_id} currentProductId={product.product_id}/>
         </div>
     );
 }

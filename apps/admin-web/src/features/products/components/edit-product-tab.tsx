@@ -27,6 +27,7 @@ export function EditProductTab({ product, categories, onUpdated }: EditProductTa
                     category_id: values.category_id,
                     name: values.name,
                     description: values.description,
+                    specifications: values.specifications,
                 }
             });
             onUpdated();
@@ -46,6 +47,12 @@ export function EditProductTab({ product, categories, onUpdated }: EditProductTa
                 category_id: product.category_id,
                 name: product.name,
                 description: product.description ?? "",
+                specifications: product.specifications ?? {
+                    material: null,
+                    adjustment_feature: null,
+                    max_load_kg: null,
+                    assembly_required: null,
+                }
             }}
         />
     );

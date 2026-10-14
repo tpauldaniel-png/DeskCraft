@@ -7,10 +7,10 @@ import { usePublicCategories } from "@/features/catalogue/hooks/use-categories";
 import { CategoryNavigation } from "@/features/catalogue/components/category-navigation";
 import type { ProductSort } from "@/features/catalogue/types/product";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup,DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuTrigger, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import { ProductPagination } from "@/features/catalogue/components/product-pagination";
 import { ProductPriceFilter } from "@/features/catalogue/components/product-price-filter";
 import { ProductSearch } from "@/features/catalogue/components/product-search";
+import { ArrowUpDown } from "lucide-react";
 
 
 
@@ -213,8 +213,8 @@ export function ProductsPage() {
                                 className="w-full justify-between md:w-auto"
                             />}
                         >
-                            <span className="truncate">Sort Products</span>
-                            <ChevronDown className="size-4 opacity-30"/>
+                            <span className="truncate">Sort</span>
+                            <ArrowUpDown className="size-6 opacity-50 ml-2"/>
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent>

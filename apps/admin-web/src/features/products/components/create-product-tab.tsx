@@ -43,6 +43,7 @@ export function CreateProductTab({categories, onCreated}: CreateProductTabProps)
             isPending={createProductMutation.isPending}
             submitLabel="Create Product"
             loadingText="Creating Product..."
+            
         />
     )
 }
