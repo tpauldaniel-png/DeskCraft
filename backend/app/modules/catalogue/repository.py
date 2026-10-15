@@ -346,6 +346,8 @@ class PublicProductRepository:
             search_value = f"%{search.strip()}%"
             conditions.append(Product.name.ilike(search_value))
 
+        product_order_by = [Product.name.asc(), Product.product_id.asc()]
+
         if sort is not None:
             if sort == "price_asc":
                 product_order_by = [
