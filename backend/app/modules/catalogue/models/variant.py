@@ -8,6 +8,7 @@ from sqlalchemy import (
     VARCHAR,
     CheckConstraint,
     ForeignKey,
+    Index,
     Numeric,
     text,
 )
@@ -53,4 +54,13 @@ class Variant(Base):
         onupdate=text("CURRENT_TIMESTAMP"),
     )
 
-    __table_args__ = (CheckConstraint("price >= 0", name="check_price_non_negative"),)
+    __table_args__ = (
+        CheckConstraint("price >= 0", name="check_price_non_negative"),
+        Index(
+            "ix_variants_active_product_price",
+            "product_id",
+            "price",
+            "variant_id",
+            postgresql_where=text("is_active IS TRUE"),
+        ),
+    )

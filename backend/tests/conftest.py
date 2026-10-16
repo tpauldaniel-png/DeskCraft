@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -49,6 +50,8 @@ async def setup_database(
 
     async with test_engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
+
+        await connection.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
         await connection.run_sync(Base.metadata.create_all)
 
     yield

@@ -184,6 +184,7 @@ The first capture is separate; it is not asserted to be a cold-cache test.
 | Detail images | Extra run 2 | 0.160 | 0.113 | 4 |
 | Detail images | Extra run 3 | 0.189 | 0.061 | 4 |
 
+
 ## Original plan evidence
 
 All 44 exports follow, grouped into collapsible sections. Only the CSV wrapper and QUERY PLAN header have been removed for readability. Timings and plan text are retained.

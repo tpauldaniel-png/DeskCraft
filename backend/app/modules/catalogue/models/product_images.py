@@ -81,4 +81,12 @@ class ProductImage(Base):
             unique=True,
             postgresql_where=text("is_primary IS TRUE"),
         ),
+        Index(
+            "ix_product_images_variant_display_order",
+            "variant_id",
+            text("is_primary DESC"),
+            "sort_order",
+            "created_at",
+            "product_image_id",
+        ),
     )

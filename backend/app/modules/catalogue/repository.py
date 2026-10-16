@@ -2,6 +2,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import RowMapping, and_, func, select
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.catalogue.models.category import Category
@@ -384,6 +385,13 @@ class PublicProductRepository:
             )
             .where(*conditions)
         )
+        print("CATALOGUE COUNT SQL:")
+        print(
+            count_statement.compile(
+                dialect=postgresql.dialect(),
+                compile_kwargs={"literal_binds": True},
+            )
+        )
 
         count_result = await self.db.execute(count_statement)
         total = count_result.scalar_one()
@@ -411,6 +419,14 @@ class PublicProductRepository:
             .order_by(*product_order_by)
             .offset(offset)
             .limit(page_size)
+        )
+
+        print("CATALOGUE LIST SQL:")
+        print(
+            statement.compile(
+                dialect=postgresql.dialect(),
+                compile_kwargs={"literal_binds": True},
+            )
         )
 
         result = await self.db.execute(statement)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import BOOLEAN, TIMESTAMP, VARCHAR, ForeignKey, Text, text
+from sqlalchemy import BOOLEAN, TIMESTAMP, VARCHAR, ForeignKey, Index, Text, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
@@ -45,4 +45,13 @@ class Product(Base):
         ForeignKey("categories.category_id"),
         index=True,
         nullable=False,
+    )
+
+    __table_args__ = (
+        Index(
+            "ix_products_name_trgs",
+            "name",
+            postgresql_using="gin",
+            postgresql_ops={"name": "gin_trgm_ops"},
+        ),
     )
