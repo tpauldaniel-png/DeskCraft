@@ -3,8 +3,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_redis_client
 from app.db.session import get_db
 from app.modules.catalogue.schemas.public_product import (
     ProductSort,
@@ -19,6 +21,7 @@ router = APIRouter(prefix="/api/v1/catalogue/products", tags=["Public Product"])
 @router.get("", response_model=PublicProductListResponse)
 async def list_public_products(
     db: Annotated[AsyncSession, Depends(get_db)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 20,
     search: Annotated[str | None, Query(max_length=200)] = None,
@@ -28,7 +31,7 @@ async def list_public_products(
     max_price: Annotated[Decimal | None, Query(ge=0)] = None,
 ) -> PublicProductListResponse:
 
-    service = PublicProductService(db)
+    service = PublicProductService(db, redis_client=redis_client)
     items, total = await service.list_public_products(
         page=page,
         page_size=page_size,
@@ -52,9 +55,11 @@ async def list_public_products(
 
 @router.get("/{slug}", response_model=PublicProductDetailResponse)
 async def get_public_product_by_slug(
-    slug: str, db: Annotated[AsyncSession, Depends(get_db)]
+    slug: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ):
-    service = PublicProductService(db)
+    service = PublicProductService(db, redis_client=redis_client)
     product = await service.get_public_product_by_slug(slug=slug)
 
     return product

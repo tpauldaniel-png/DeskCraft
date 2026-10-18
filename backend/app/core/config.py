@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     cloudinary_cloud_name: str
     cloudinary_api_key: str
     cloudinary_api_secret: str
+    redis_url: str = "redis://127.0.0.1:6379/0"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"

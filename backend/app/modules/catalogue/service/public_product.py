@@ -1,22 +1,32 @@
+import json
+import logging
 from decimal import Decimal
+from hashlib import sha256
 from uuid import UUID
 
+from pydantic import ValidationError
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_cached_value, set_cached_value
 from app.core.exceptions import AppException
 from app.modules.catalogue.repository import PublicProductRepository
 from app.modules.catalogue.schemas.public_product import (
     ProductSort,
     PublicProductCardResponse,
     PublicProductDetailResponse,
+    PublicProductListResponse,
     PublicProductVariant,
     PublicProductVariantImage,
 )
 
+logger = logging.getLogger("deskcraft.catalogue.cache")
+
 
 class PublicProductService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.repository = PublicProductRepository(db)
+        self.redis_client = redis_client
 
     async def list_public_products(
         self,
@@ -41,6 +51,40 @@ class PublicProductService:
                     message="min_price cannot be greater than max_price",
                 )
 
+            parameters = {
+                "page": page,
+                "page_size": page_size,
+                "search": search,
+                "category_id": category_id,
+                "sort": sort,
+                "min_price": min_price,
+                "max_price": max_price,
+            }
+
+            parameters_json = json.dumps(parameters, default=str, sort_keys=True)
+
+            fingerprint = sha256(parameters_json.encode("utf-8")).hexdigest()
+
+            cache_key = f"deskcraft:catalogue:products:list:v1:{fingerprint}"
+
+            cached_value = await get_cached_value(self.redis_client, cache_key)
+
+            if cached_value is not None:
+                try:
+                    cached_response = PublicProductListResponse.model_validate_json(
+                        cached_value
+                    )
+
+                except ValidationError:
+                    logger.warning(
+                        "Invalid catalogue cache entry; falling back to database."
+                    )
+                else:
+                    logger.info("Cache HIT for catalogue list.")
+                    return cached_response.items, cached_response.total
+
+            logger.info("Cache MISS for catalogue products; querying database.")
+
             items, total = await self.repository.list_public_products(
                 page=page,
                 page_size=page_size,
@@ -52,6 +96,20 @@ class PublicProductService:
             )
 
             items = [PublicProductCardResponse.model_validate(item) for item in items]
+
+            response = PublicProductListResponse(
+                items=items,
+                total=total,
+                page=page,
+                page_size=page_size,
+                sort=sort,
+                min_price=min_price,
+                max_price=max_price,
+            )
+
+            await set_cached_value(
+                self.redis_client, cache_key, response.model_dump_json(), ttl=60
+            )
 
             return items, total
 
@@ -70,6 +128,26 @@ class PublicProductService:
     ) -> PublicProductDetailResponse:
 
         try:
+            cache_key = f"deskcraft:catalogue:products:detail:v1:{slug}"
+
+            cached_value = await get_cached_value(self.redis_client, cache_key)
+
+            if cached_value is not None:
+                try:
+                    cached_response = PublicProductDetailResponse.model_validate_json(
+                        cached_value
+                    )
+
+                except ValidationError:
+                    logger.warning(
+                        "Invalid catalogue cache entry; falling back to database."
+                    )
+                else:
+                    logger.info("Cache HIT for public product detail.")
+                    return cached_response
+
+            logger.info("Cache MISS for public product detail; querying database.")
+
             product = await self.repository.get_public_product_by_slug(slug=slug)
 
             if not product:
@@ -111,7 +189,7 @@ class PublicProductService:
                 for variant in variant_rows
             ]
 
-            return PublicProductDetailResponse(
+            response = PublicProductDetailResponse(
                 product_id=product["product_id"],
                 category_id=product["category_id"],
                 category_name=product["category_name"],
@@ -121,6 +199,12 @@ class PublicProductService:
                 specifications=product["specifications"],
                 variants=variants,
             )
+
+            await set_cached_value(
+                self.redis_client, cache_key, response.model_dump_json(), ttl=60
+            )
+
+            return response
 
         except AppException:
             raise

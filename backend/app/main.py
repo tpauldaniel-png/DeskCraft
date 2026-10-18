@@ -1,5 +1,11 @@
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
 
 from app.api.routes.operations import router as operations_router
 from app.core.config import settings
@@ -18,6 +24,28 @@ from app.modules.catalogue.routes.variant import router as variant_router
 
 configure_logging()
 
+logger = logging.getLogger("deskcraft.main")
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI) -> AsyncIterator[None]:
+    async with Redis.from_url(
+        settings.redis_url,
+        decode_responses=True,
+        socket_connect_timeout=1,
+        socket_timeout=1,
+    ) as redis_client:
+        application.state.redis = redis_client
+
+        try:
+            await redis_client.ping()
+            logger.info("Redis connection established successfully.")
+        except RedisError:
+            logger.warning(
+                "Redis connection failed. The application will continue without Redis."
+            )
+        yield
+
 
 def create_application() -> FastAPI:
     application = FastAPI(
@@ -25,6 +53,7 @@ def create_application() -> FastAPI:
         version=settings.app_version,
         debug=settings.debug,
         description="Backend API for the DeskCraft e-commerce platform",
+        lifespan=lifespan,
     )
 
     application.add_middleware(
