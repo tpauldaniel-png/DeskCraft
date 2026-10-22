@@ -2,9 +2,11 @@ import re
 from uuid import UUID
 
 from fastapi import status
+from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_catalogue_cache
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.product import Product
 from app.modules.catalogue.repository import CategoryRepository, ProductRepository
@@ -12,10 +14,11 @@ from app.modules.catalogue.schemas.product import ProductCreate, ProductUpdate
 
 
 class ProductService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.db = db
         self.product_repository = ProductRepository(db)
         self.category_repository = CategoryRepository(db)
+        self.redis_client = redis_client
 
     def create_slug(self, name: str) -> str:
         """
@@ -63,6 +66,9 @@ class ProductService:
         try:
             created_product = await self.product_repository.create_product(product)
             await self.db.commit()
+
+            await invalidate_catalogue_cache(self.redis_client)
+
             await self.db.refresh(created_product)
 
         except IntegrityError as error:
@@ -130,6 +136,7 @@ class ProductService:
         try:
             updated_product = await self.product_repository.update_product(product)
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(updated_product)
 
         except IntegrityError as error:

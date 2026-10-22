@@ -8,7 +8,11 @@ from pydantic import ValidationError
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.cache import get_cached_value, set_cached_value
+from app.core.cache import (
+    get_cached_value,
+    get_catalogue_cache_version,
+    set_cached_value,
+)
 from app.core.exceptions import AppException
 from app.modules.catalogue.repository import PublicProductRepository
 from app.modules.catalogue.schemas.public_product import (
@@ -65,9 +69,19 @@ class PublicProductService:
 
             fingerprint = sha256(parameters_json.encode("utf-8")).hexdigest()
 
-            cache_key = f"deskcraft:catalogue:products:list:v1:{fingerprint}"
+            version = await get_catalogue_cache_version(self.redis_client)
 
-            cached_value = await get_cached_value(self.redis_client, cache_key)
+            cache_key = (
+                f"deskcraft:catalogue:products:list:v1:g{version}:{fingerprint}"
+                if version is not None
+                else None
+            )
+
+            cached_value = (
+                await get_cached_value(self.redis_client, cache_key)
+                if cache_key is not None
+                else None
+            )
 
             if cached_value is not None:
                 try:
@@ -107,9 +121,10 @@ class PublicProductService:
                 max_price=max_price,
             )
 
-            await set_cached_value(
-                self.redis_client, cache_key, response.model_dump_json(), ttl=60
-            )
+            if cache_key is not None:
+                await set_cached_value(
+                    self.redis_client, cache_key, response.model_dump_json(), ttl=60
+                )
 
             return items, total
 
@@ -128,9 +143,19 @@ class PublicProductService:
     ) -> PublicProductDetailResponse:
 
         try:
-            cache_key = f"deskcraft:catalogue:products:detail:v1:{slug}"
+            version = await get_catalogue_cache_version(self.redis_client)
 
-            cached_value = await get_cached_value(self.redis_client, cache_key)
+            cache_key = (
+                f"deskcraft:catalogue:products:detail:v1:g{version}:{slug}"
+                if version is not None
+                else None
+            )
+
+            cached_value = (
+                await get_cached_value(self.redis_client, cache_key)
+                if cache_key is not None
+                else None
+            )
 
             if cached_value is not None:
                 try:
@@ -200,9 +225,10 @@ class PublicProductService:
                 variants=variants,
             )
 
-            await set_cached_value(
-                self.redis_client, cache_key, response.model_dump_json(), ttl=60
-            )
+            if cache_key is not None:
+                await set_cached_value(
+                    self.redis_client, cache_key, response.model_dump_json(), ttl=60
+                )
 
             return response
 

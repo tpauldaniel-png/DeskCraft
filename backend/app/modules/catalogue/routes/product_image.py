@@ -2,8 +2,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, Path, UploadFile, status
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_redis_client
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
 from app.modules.catalogue.schemas.product_image import (
@@ -27,11 +29,12 @@ async def upload_product_image(
     variant_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
     image: UploadFile = File(...),
     alt_text: str = Form(...),
 ) -> ProductImageResponse:
 
-    service = ProductImageService(db)
+    service = ProductImageService(db, redis_client=redis_client)
     product_image = await service.upload_product_image(variant_id, image, alt_text)
 
     return ProductImageResponse.model_validate(product_image)
@@ -63,10 +66,11 @@ async def update_product_image(
     image_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
     payload: ProductImageAltTextUpdateRequest,
 ) -> ProductImageResponse:
 
-    service = ProductImageService(db)
+    service = ProductImageService(db, redis_client=redis_client)
     product_image = await service.update_product_image_alt_text(
         product_image_id=image_id, new_alt_text=payload.alt_text, variant_id=variant_id
     )
@@ -79,10 +83,11 @@ async def reorder_product_images(
     variant_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
     payload: ProductImageReorderRequest,
 ) -> None:
 
-    service = ProductImageService(db)
+    service = ProductImageService(db, redis_client=redis_client)
     await service.reorder_images(variant_id=variant_id, image_ids=payload.image_ids)
 
 
@@ -92,9 +97,10 @@ async def delete_product_image(
     product_image_id: Annotated[UUID, Path()],
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> None:
 
-    service = ProductImageService(db)
+    service = ProductImageService(db, redis_client=redis_client)
     await service.delete_product_image(
         product_image_id=product_image_id, variant_id=variant_id
     )

@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from fastapi import status
+from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_catalogue_cache
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.category import Category
 from app.modules.catalogue.repository import CategoryRepository
@@ -11,8 +13,9 @@ from app.modules.catalogue.schemas.category import CategoryCreate, CategoryUpdat
 
 
 class CatalogueService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.db = db
+        self.redis_client = redis_client
         self.repository = CategoryRepository(db)
 
     async def create_category(self, category_data: CategoryCreate) -> Category:
@@ -35,6 +38,7 @@ class CatalogueService:
         try:
             created_category = await self.repository.create_category(category)
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(created_category)
 
         except IntegrityError as error:
@@ -93,6 +97,7 @@ class CatalogueService:
         try:
             updated_category = await self.repository.update_category(category)
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(updated_category)
 
         except IntegrityError as error:

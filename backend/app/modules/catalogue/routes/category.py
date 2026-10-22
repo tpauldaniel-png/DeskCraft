@@ -2,8 +2,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_redis_client
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
 from app.modules.catalogue.schemas.category import (
@@ -23,9 +25,10 @@ async def create_category(
     category_data: CategoryCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> CategoryResponse:
 
-    service = CatalogueService(db)
+    service = CatalogueService(db, redis_client=redis_client)
     category = await service.create_category(category_data)
 
     return CategoryResponse.model_validate(category)
@@ -56,9 +59,10 @@ async def update_category(
     category_data: CategoryUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> CategoryResponse:
 
-    service = CatalogueService(db)
+    service = CatalogueService(db, redis_client=redis_client)
 
     category = await service.update_category(
         category_id=category_id, category_data=category_data

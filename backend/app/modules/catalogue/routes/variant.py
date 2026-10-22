@@ -2,8 +2,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_redis_client
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
 from app.modules.catalogue.schemas.variant import (
@@ -23,9 +25,10 @@ async def create_variant(
     variant_data: VariantCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> VariantResponse:
 
-    service = VariantService(db)
+    service = VariantService(db, redis_client=redis_client)
     variant = await service.create_variant(variant_data)
 
     return VariantResponse.model_validate(variant)
@@ -78,9 +81,10 @@ async def update_variant(
     variant_data: VariantUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> VariantResponse:
 
-    service = VariantService(db)
+    service = VariantService(db, redis_client=redis_client)
     variant = await service.update_variant(variant_id, variant_data)
 
     return VariantResponse.model_validate(variant)

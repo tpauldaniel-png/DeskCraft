@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from fastapi import UploadFile, status
+from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_catalogue_cache
 from app.core.config import settings
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.product_images import ProductImage
@@ -12,8 +14,9 @@ from app.modules.catalogue.service.cloudinary_storage import CloudinaryStorage
 
 
 class ProductImageService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.db = db
+        self.redis_client = redis_client
         self.repository = ProductImageRepository(db)
         self.cloudinary_storage = CloudinaryStorage(
             cloud_name=settings.cloudinary_cloud_name,
@@ -82,6 +85,7 @@ class ProductImageService:
                 product_image
             )
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(created_product_image)
 
         except IntegrityError as error:
@@ -161,6 +165,7 @@ class ProductImageService:
                 product_image
             )
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(updated_product_image)
 
         except IntegrityError as error:
@@ -214,6 +219,7 @@ class ProductImageService:
                 images_by_id[image_id].sort_order = position
 
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
 
         except SQLAlchemyError:
             await self.db.rollback()
@@ -266,6 +272,7 @@ class ProductImageService:
                 img.sort_order = position
 
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
 
         except SQLAlchemyError as error:
             await self.db.rollback()

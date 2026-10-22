@@ -1,9 +1,11 @@
 from uuid import UUID
 
 from fastapi import status
+from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import invalidate_catalogue_cache
 from app.core.exceptions import AppException
 from app.modules.catalogue.models.variant import Variant
 from app.modules.catalogue.repository import (
@@ -20,8 +22,9 @@ from app.modules.catalogue.schemas.variant import (
 
 
 class VariantService:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.db = db
+        self.redis_client = redis_client
         self.variant_repository = VariantRepository(db)
         self.product_repository = ProductRepository(db)
         self.category_repository = CategoryRepository(db)
@@ -62,6 +65,7 @@ class VariantService:
         try:
             creatded_variant = await self.variant_repository.create_variant(variant)
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(creatded_variant)
 
         except IntegrityError:
@@ -132,6 +136,7 @@ class VariantService:
         try:
             updated_variant = await self.variant_repository.update_variant(variant)
             await self.db.commit()
+            await invalidate_catalogue_cache(self.redis_client)
             await self.db.refresh(updated_variant)
 
         except IntegrityError:

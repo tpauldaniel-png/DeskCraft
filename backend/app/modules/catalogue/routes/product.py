@@ -2,8 +2,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache import get_redis_client
 from app.db.session import get_db
 from app.modules.auth.dependencies import require_admin
 from app.modules.catalogue.schemas.product import (
@@ -23,9 +25,10 @@ async def create_product(
     product_data: ProductCreate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> ProductResponse:
 
-    service = ProductService(db)
+    service = ProductService(db, redis_client=redis_client)
     product = await service.create_product(product_data)
 
     return ProductResponse.model_validate(product)
@@ -78,9 +81,10 @@ async def update_product(
     product_data: ProductUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(require_admin)],
+    redis_client: Annotated[Redis | None, Depends(get_redis_client)],
 ) -> ProductResponse:
 
-    service = ProductService(db)
+    service = ProductService(db, redis_client=redis_client)
 
     product = await service.update_product(
         product_id=product_id, product_data=product_data
