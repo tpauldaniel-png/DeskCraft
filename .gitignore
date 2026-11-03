@@ -10,6 +10,7 @@ __pycache__/
 *.py[cod]
 venv/
 .venv/
+.venv-load/
 
 # Node
 node_modules/

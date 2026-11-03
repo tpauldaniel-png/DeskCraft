@@ -13,6 +13,7 @@ from app.core.cache import (
     get_catalogue_cache_version,
     set_cached_value,
 )
+from app.core.config import settings
 from app.core.exceptions import AppException
 from app.modules.catalogue.repository import PublicProductRepository
 from app.modules.catalogue.schemas.public_product import (
@@ -30,7 +31,7 @@ logger = logging.getLogger("deskcraft.catalogue.cache")
 class PublicProductService:
     def __init__(self, db: AsyncSession, redis_client: Redis | None = None):
         self.repository = PublicProductRepository(db)
-        self.redis_client = redis_client
+        self.redis_client = redis_client if settings.catalogue_cache_enabled else None
 
     async def list_public_products(
         self,
@@ -132,6 +133,7 @@ class PublicProductService:
             raise
 
         except Exception as e:
+            logger.exception("Unexpected error while listing public products.")
             raise AppException(
                 status_code=500,
                 code="INTERNAL_SERVER_ERROR",
