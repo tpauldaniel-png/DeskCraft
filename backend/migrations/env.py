@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.config import settings
 from app.db.base import Base
+from app.modules.cart.models.cart import Cart  # noqa: F401
+from app.modules.cart.models.cart_items import CartItem  # noqa: F401
 from app.modules.catalogue.models.category import Category  # noqa: F401
 from app.modules.catalogue.models.product import Product  # noqa: F401
 from app.modules.catalogue.models.product_images import ProductImage  # noqa: F401

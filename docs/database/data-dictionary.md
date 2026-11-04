@@ -165,12 +165,13 @@ This serves as a single source of truth that helps to understand the context, fo
 - A variant can have at most one cart record.
 - Each cart belongs to exactly one user.
 
+
 ## Cart Items
 | Field | Type | Constraints | Description |
 |---|---|---|---|
 | cart_item_id | UUID | PK | Unique cart item identifier |
 | cart_id | UUID | NN, FK -> `carts.cart_id` | Cart to which the cart item belongs |
-| variant_id | UUID | NN, FK -> `product_variants.variant_id` | Variant to which the cart item belongs |
+| variant_id | UUID | NN, FK -> `variants.variant_id` | Variant to which the cart item belongs |
 | quantity | INTEGER | NN, DEFAULT `1` | Quantity of the cart item |
 | created_at | TIMESTAMPTZ | NN, DEFAULT CURRENT_TIMESTAMP | cart item creation time |
 | updated_at | TIMESTAMPTZ | NN, DEFAULT CURRENT_TIMESTAMP | last cart item update time |
