@@ -13,6 +13,7 @@ from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
 from app.middleware.request_logging import request_logging_middleware
 from app.modules.auth.routes import router as auth_router
+from app.modules.cart.routes.cart import router as cart_router
 from app.modules.catalogue.routes.category import router as catalogue_router
 from app.modules.catalogue.routes.product import router as product_router
 from app.modules.catalogue.routes.product_image import router as product_image_router
@@ -91,6 +92,7 @@ def create_application() -> FastAPI:
     application.include_router(product_image_router)
     application.include_router(public_product_router)
     application.include_router(public_category_router)
+    application.include_router(cart_router)
 
     @application.get("/", tags=["Root"])
     async def root() -> dict[str, str]:
