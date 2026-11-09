@@ -7,6 +7,8 @@ import { ProductDetailContent } from "@/features/catalogue/components/product-de
 import { ProductSpecifications } from "@/features/catalogue/components/product-specifications";
 import { RelatedProductsSection } from "@/features/catalogue/components/related-products-section";
 
+
+
 export function ProductDetailPage() {
 
     const {slug} = useParams<{slug: string}>();

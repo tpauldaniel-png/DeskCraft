@@ -113,9 +113,9 @@ class CartRepository:
             .join(Category, Product.category_id == Category.category_id)
             .where(
                 Variant.variant_id == variant_id,
-                Variant.is_active is True,
-                Product.is_active is True,
-                Category.is_active is True,
+                Variant.is_active.is_(True),
+                Product.is_active.is_(True),
+                Category.is_active.is_(True),
             )
         )
 

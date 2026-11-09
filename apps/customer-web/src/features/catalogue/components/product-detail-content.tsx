@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/utils/format-currency";
 import { useState } from "react";
 
+import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
+
 
 type ProductDetailContentProps = {
     product: ProductDetail;
@@ -63,13 +65,15 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                                         type="button"
                                         variant={isSelected ? "default" : "outline"}
                                         onClick={() => setSelectedVariantId(variant.variant_id)}
-                                        className="h-auto rounded-full px-3 py-2 whitespace-normal"
+                                        className="h-auto rounded-full px-3 py-2 whitespace-normal cursor-pointer"
                                     >
                                         {variant.name}
                                     </Button>
                                 );
                             })} 
                         </div>
+
+                        <AddToCartButton variant_id={selectedVariant.variant_id} />
                     </fieldset>
                 ) : (
                     <p className="text-sm text-muted-foreground">

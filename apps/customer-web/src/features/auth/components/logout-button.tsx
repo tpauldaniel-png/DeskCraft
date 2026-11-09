@@ -8,6 +8,9 @@ import { logoutUser } from "../api/logout-user";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useState } from "react";
 
+import {cartKeys} from "@/features/cart/hooks/use-cart";
+
+
 
 
 
@@ -18,9 +21,23 @@ export function LogOutButton() {
 
     const logoutMutation = useMutation({
         mutationFn: logoutUser,
-        onSuccess: () => {
-            queryClient.setQueryData(authQueryKeys.me, null);
+        onSuccess: async () => {
+            await queryClient.cancelQueries({
+                queryKey: authQueryKeys.me,
+                exact: true,
+            });
+
+            await queryClient.cancelQueries({
+                queryKey: cartKeys.all,
+            });
+
+            queryClient.removeQueries({
+                queryKey: cartKeys.all,
+            });
+
             setIsDialogOpen(false);
+            queryClient.setQueryData(authQueryKeys.me, null);
+
             navigate("/login", {replace: true});
         }
 
@@ -37,7 +54,7 @@ export function LogOutButton() {
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
                 trigger={
-                    <Button variant="outline" >Log out</Button>
+                    <Button variant="outline" type="button" disabled={logoutMutation.isPending}>Log out</Button>
                 }
                 title="Log out of DeskCraft account?"
                 description="You will need to provide credentials to access your account again"

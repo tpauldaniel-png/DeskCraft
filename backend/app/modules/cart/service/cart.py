@@ -46,6 +46,10 @@ class CartService:
                 message="Database error",
             ) from e
 
+        except Exception:
+            await self.db.rollback()
+            raise
+
     async def _get_locked_cart(self, user_id: UUID, *, create: bool = False) -> Cart:
         cart = await self.cart_repository.get_cart_for_update(
             user_id=user_id, create=create

@@ -1,7 +1,10 @@
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 import { Button } from "@base-ui/react/button";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { LogOutButton } from "@/features/auth/components/logout-button";
+
+import { CustomerHeader } from "@/components/layout/customer-header";
+import { CustomerFooter } from "@/components/layout/customer-footer";
+
 
 export function ProtectedLayout() {
     const location = useLocation();
@@ -30,16 +33,14 @@ export function ProtectedLayout() {
     }
     return (
         <>
-            <header>
-                <span>DeskCraft</span>
-                <LogOutButton />
-            </header>
+            <CustomerHeader />
+            
 
             <main>
                 <Outlet />
             </main>
 
-            <footer>DeskCraft footer</footer>
+            <CustomerFooter />
         </>
     )
 }
