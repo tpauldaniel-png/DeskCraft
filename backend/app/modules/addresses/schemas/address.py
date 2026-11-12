@@ -76,7 +76,7 @@ class AddressResponse(BaseModel):
 class AddressUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    recipient_name: NameText | None
+    recipient_name: NameText | None = None
     phone_number: ShortText | None = None
     address_line1: AddressLine | None = None
     address_line2: AddressLine | None = None

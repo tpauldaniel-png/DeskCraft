@@ -105,6 +105,10 @@ export function CustomerHeader() {
                                     </span>
                                 )}
                             </Link>
+                            <Link to="/addresses" className="ml-5 hidden rounded-md text-sm font-medium hover:bg-muted lg:inline-flex">
+                                Saved Addresses
+                            </Link>
+                            
                             <div className="ml-5">
                                 <LogOutButton />
                             </div>
@@ -155,23 +159,32 @@ export function CustomerHeader() {
                                     {(isSignedIn || isGuest) && <div className="border-t" />}
 
                                     {isSignedIn && (
-                                        <SheetClose
-                                            render={<Link to="/cart" className="flex items-center gap-3 text-base"/>}
-                                        >
-                                            <ShoppingCart className="size-5" aria-hidden="true"/>
-                                            Cart
-                                            {typeof totalQuantity === "number" && totalQuantity > 0 && (
-                                                <span
-                                                    aria-hidden="true"
-                                                    className="ml-auto text-sm tabular-nums"
-                                                >
-                                                    {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
-                                                </span>
-                                            )}
-                                            
+                                        <>
+                                            <SheetClose
+                                                render={<Link to="/cart" className="flex items-center gap-3 text-base"/>}
+                                            >
+                                                <ShoppingCart className="size-5" aria-hidden="true"/>
+                                                Cart
+                                                {typeof totalQuantity === "number" && totalQuantity > 0 && (
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="ml-auto text-sm tabular-nums"
+                                                    >
+                                                        {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+                                                    </span>
+                                                )}
+                                                
+                                                
+                                                
+                                            </SheetClose>
+                                            <SheetClose
+                                                render={<Link to="/addresses" className="text-base"/>}
+                                            >
+                                                Saved Addresses
+                                            </SheetClose>
+
                                             <LogOutButton />
-                                            
-                                        </SheetClose>
+                                        </>
                                     )}
 
                                     {isGuest && authNavItems.map((item) => (
